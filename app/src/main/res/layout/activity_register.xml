@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".RegisterActivity">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintHeight_percent="0.9"
+        app:layout_constraintWidth_percent="0.8"
+        >
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="40dp"
+            android:text="게임에서\n사용하실 이름을\n정해 주세요."
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/guideRegister1"/>
+
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideRegister1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.5"/>
+
+
+        <TextView
+            android:id="@+id/txtRegister"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="닉네임 :"
+            app:layout_constraintBaseline_toBaselineOf="@id/editUser"
+            app:layout_constraintTop_toTopOf="@id/editUser"
+            app:layout_constraintBottom_toBottomOf="@id/editUser"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/editUser"
+            app:layout_constraintHorizontal_weight="2"/>
+
+
+        <EditText
+            android:id="@+id/editUser"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="text"
+            app:layout_constraintTop_toBottomOf="@id/guideRegister1"
+            app:layout_constraintLeft_toRightOf="@id/txtRegister"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintHorizontal_weight= "3"/>
+
+        <Button
+            android:id="@+id/btnSignIn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="회원 가입"
+            app:layout_constraintTop_toBottomOf="@id/guideRegister1"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
