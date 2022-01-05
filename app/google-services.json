@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "545673499784",
+    "project_id": "cram-39fc3",
+    "storage_bucket": "cram-39fc3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:545673499784:android:e837119af8e9edece27b3d",
+        "android_client_info": {
+          "package_name": "com.pingmo.cram"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "545673499784-giblvq68a9t81sh6lvpuoa9uc9frrhuc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.pingmo.cram",
+            "certificate_hash": "945c5d9dc121423476a4f1e28f3b4de8111e0d2f"
+          }
+        },
+        {
+          "client_id": "545673499784-5nd0fqq8qk0iv9huq8t6v3742kcd1223.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCAUHKDbS8SdiFXM3aenZDOHyLlb82MzBo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "545673499784-5nd0fqq8qk0iv9huq8t6v3742kcd1223.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
