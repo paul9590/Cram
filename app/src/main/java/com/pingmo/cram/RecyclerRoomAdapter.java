@@ -11,6 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -20,16 +22,21 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
-public class RecyclerRoomAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class RecyclerRoomAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements Filterable {
     private ArrayList<RecyclerRoomList> mData = null;
+    private ArrayList<RecyclerRoomList> filterList = null;
     Context context;
     private final int VIEW_TYPE_ITEM = 0;
     private final int VIEW_TYPE_LOADING = 1;
 
     public RecyclerRoomAdapter(ArrayList<RecyclerRoomList> data) {
         mData = data;
+        filterList = data;
     }
 
     @NonNull
@@ -58,15 +65,15 @@ public class RecyclerRoomAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     @Override
     public int getItemViewType(int position) {
-        return mData.get(position) == null ? VIEW_TYPE_LOADING : VIEW_TYPE_ITEM;
+        return filterList.get(position) == null ? VIEW_TYPE_LOADING : VIEW_TYPE_ITEM;
     }
 
     private void populateItemRows(RoomViewHolder holder, int position) {
-        RecyclerRoomList item = mData.get(position);
+        RecyclerRoomList item = filterList.get(position);
         if(item.getImgLock()){
-            (holder).imbLock.setVisibility(View.VISIBLE);
+            (holder).imgLock.setVisibility(View.VISIBLE);
         }else{
-            (holder).imbLock.setVisibility(View.INVISIBLE);
+            (holder).imgLock.setVisibility(View.INVISIBLE);
         }
         (holder).txtRoomName.setText(item.getRoomName());
         (holder).txtRoomInfo.setText(item.getRoomInfo());
@@ -79,12 +86,45 @@ public class RecyclerRoomAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     // getItemCount : 전체 데이터의 개수를 리턴
     @Override public int getItemCount() {
-        return mData == null ? 0 : mData.size();
+        return filterList == null ? 0 : filterList.size();
+    }
+
+    @Override
+    public Filter getFilter() {
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence constraint) {
+                String str = constraint.toString();
+                if (str.isEmpty()) {
+                    filterList = mData;
+                } else {
+                    ArrayList<RecyclerRoomList> filteringList = new ArrayList<>();
+                    for(RecyclerRoomList item : mData) {
+                        if(item.getRoomName().toUpperCase().contains(str.toUpperCase()) ||
+                                item.getRoomName().toUpperCase().contains(str.toLowerCase())){
+                            filteringList.add(item);
+                        }
+                    }
+                    filterList = filteringList;
+                }
+
+                FilterResults filterResults = new FilterResults();
+                filterResults.values = filterList;
+
+                return filterResults;
+            }
+
+            @Override
+            protected void publishResults(CharSequence constraint, FilterResults results) {
+                filterList = (ArrayList<RecyclerRoomList>) results.values;
+                notifyDataSetChanged();
+            }
+        };
     }
 
     // 아이템 뷰를 저장하는 뷰홀더 클래스
     public class RoomViewHolder extends RecyclerView.ViewHolder {
-        ImageButton imbLock;
+        ImageView imgLock;
         TextView txtRoomName;
         TextView txtRoomInfo;
 
@@ -92,14 +132,14 @@ public class RecyclerRoomAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             super(itemView);
 
             // 뷰 객체에 대한 참조
-            imbLock = itemView.findViewById(R.id.imbLock);
+            imgLock = itemView.findViewById(R.id.imgLock);
             txtRoomName = itemView.findViewById(R.id.txtRoomName);
             txtRoomInfo = itemView.findViewById(R.id.txtRoomInfo);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    // 방 번호 받아서 실행
+                    // 방 번호 받아서 실행 비밀번호 확인 및 인원수 체크
                     Intent gameIntent = new Intent(context, GameActivity.class);
                     gameIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                     context.startActivity(gameIntent);
