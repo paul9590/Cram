@@ -49,8 +49,6 @@ public class MainActivity extends AppCompatActivity {
     private myDBHelper myDb;
     private SQLiteDatabase sqlDB;
 
-    private String [] userInfo = new String[3];
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -163,13 +161,7 @@ public class MainActivity extends AppCompatActivity {
         sqlDB = myDb.getReadableDatabase();
         Cursor cur = sqlDB.rawQuery("SELECT * FROM userTB", null);
 
-        if(cur.getCount() > 0){
-            cur.moveToFirst();
-            userInfo[0] = cur.getString(cur.getColumnIndexOrThrow("userName"));
-            cur.close();
-            sqlDB.close();
-
-        } else {
+        if(cur.getCount() == 0){
             Intent loginIntent = new Intent(getApplicationContext(), LoginActivity.class);
             loginIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
             startActivity(loginIntent);
