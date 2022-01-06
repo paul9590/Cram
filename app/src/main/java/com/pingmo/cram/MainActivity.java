@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Button btnStart = (Button) findViewById(R.id.btnStart);
+        Button btnStart = (Button) findViewById(R.id.btnRoom);
         Button btnShop = (Button) findViewById(R.id.btnShop);
         Button btnSetting = (Button) findViewById(R.id.btnSetting);
         ImageView imgUser = (ImageView) findViewById(R.id.imgUser);
@@ -72,7 +72,9 @@ public class MainActivity extends AppCompatActivity {
         btnStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent roomIntent = new Intent(getApplicationContext(), RoomActivity.class);
+                roomIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                startActivity(roomIntent);
             }
         });
 

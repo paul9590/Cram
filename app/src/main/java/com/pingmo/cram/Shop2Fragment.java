@@ -22,8 +22,8 @@ import java.util.ArrayList;
 public class Shop2Fragment extends Fragment {
 
     RecyclerView mRecyclerView = null;
-    RecyclerViewAdapter mAdapter = null;
-    ArrayList<RecyclerShopItem> mList;
+    RecyclerShopAdapter mAdapter = null;
+    ArrayList<RecyclerShopList> mList;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -73,62 +73,57 @@ public class Shop2Fragment extends Fragment {
 
         Drawable mImageDrawable [];
         String mMainText [];
-        String mSubText [];
 
         mRecyclerView = rootView.findViewById(R.id.viewShop2);
 
         mList = new ArrayList<>();
-        mAdapter = new RecyclerViewAdapter(mList);
+        mAdapter = new RecyclerShopAdapter(mList);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false));
+
         mImageDrawable = new Drawable[4];
         mMainText = new String[4];
-        mSubText = new String[4];
 
         // 이부분 건들여서 서버 측 소스 코드 받아 올 것
         for(int i = 0; i < 4; i++) {
             mImageDrawable[i] = ResourcesCompat.getDrawable(getResources(), R.drawable.help, null);
-            mMainText[i] = "Crocus";
-            mSubText[i] = "www.crocus.co.kr";
+            mMainText[i] = "paul";
         }
 
-        addItem(mImageDrawable, mMainText, mSubText);
-        addItem(mImageDrawable, mMainText, mSubText);
-        addItem(mImageDrawable, mMainText, mSubText);
-        addItem(mImageDrawable, mMainText, mSubText);
-        addItem(mImageDrawable, mMainText, mSubText);
-        addItem(mImageDrawable, mMainText, mSubText);
-        addItem(mImageDrawable, mMainText, mSubText);
-        addItem(mImageDrawable, mMainText, mSubText);
-        addItem(mImageDrawable, mMainText, mSubText);
-        addItem(mImageDrawable, mMainText, mSubText);
-        addItem(mImageDrawable, mMainText, mSubText);
-        addItem(mImageDrawable, mMainText, mSubText);
-        addItem(mImageDrawable, mMainText, mSubText);
-        addItem(mImageDrawable, mMainText, mSubText);
-        addItem(mImageDrawable, mMainText, mSubText);
+        addItem(mImageDrawable, mMainText);
+        addItem(mImageDrawable, mMainText);
+        addItem(mImageDrawable, mMainText);
+        addItem(mImageDrawable, mMainText);
+        addItem(mImageDrawable, mMainText);
+        addItem(mImageDrawable, mMainText);
+        addItem(mImageDrawable, mMainText);
+        addItem(mImageDrawable, mMainText);
+        addItem(mImageDrawable, mMainText);
+        addItem(mImageDrawable, mMainText);
+        addItem(mImageDrawable, mMainText);
+        addItem(mImageDrawable, mMainText);
+        addItem(mImageDrawable, mMainText);
+        addItem(mImageDrawable, mMainText);
+        addItem(mImageDrawable, mMainText);
+        addItem(mImageDrawable, mMainText);
         mAdapter.notifyDataSetChanged();
 
         return rootView;
     }
 
-    private void addItem(Drawable icon [], String mainText [], String subText []) {
-        RecyclerShopItem item = new RecyclerShopItem();
+    private void addItem(Drawable icon [], String mainText []) {
+        RecyclerShopList item = new RecyclerShopList();
         item.setImgShop1(icon[0]);
         item.setMainText1(mainText[0]);
-        item.setSubText1(subText[0]);
 
         item.setImgShop2(icon[1]);
         item.setMainText2(mainText[1]);
-        item.setSubText2(subText[1]);
 
         item.setImgShop3(icon[2]);
         item.setMainText3(mainText[2]);
-        item.setSubText3(subText[2]);
 
         item.setImgShop4(icon[3]);
         item.setMainText4(mainText[3]);
-        item.setSubText4(subText[3]);
         mList.add(item);
     }
 }

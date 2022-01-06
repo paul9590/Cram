@@ -2,22 +2,18 @@ package com.pingmo.cram;
 
 import android.graphics.drawable.Drawable;
 
-public class RecyclerShopItem {
+public class RecyclerShopList {
     private Drawable imgShop1;
     private String mainText1;
-    private String subText1;
 
     private Drawable imgShop2;
     private String mainText2;
-    private String subText2;
 
     private Drawable imgShop3;
     private String mainText3;
-    private String subText3;
 
     private Drawable imgShop4;
     private String mainText4;
-    private String subText4;
 
     public Drawable getImgShop1() {
         return imgShop1;
@@ -33,14 +29,6 @@ public class RecyclerShopItem {
 
     public void setMainText1(String mainText1) {
         this.mainText1 = mainText1;
-    }
-
-    public String getSubText1() {
-        return subText1;
-    }
-
-    public void setSubText1(String subText1) {
-        this.subText1 = subText1;
     }
 
     public Drawable getImgShop2() {
@@ -59,14 +47,6 @@ public class RecyclerShopItem {
         this.mainText2 = mainText2;
     }
 
-    public String getSubText2() {
-        return subText2;
-    }
-
-    public void setSubText2(String subText2) {
-        this.subText2 = subText2;
-    }
-
     public Drawable getImgShop3() {
         return imgShop3;
     }
@@ -83,14 +63,6 @@ public class RecyclerShopItem {
         this.mainText3 = mainText3;
     }
 
-    public String getSubText3() {
-        return subText3;
-    }
-
-    public void setSubText3(String subText3) {
-        this.subText3 = subText3;
-    }
-
     public Drawable getImgShop4() {
         return imgShop4;
     }
@@ -105,13 +77,5 @@ public class RecyclerShopItem {
 
     public void setMainText4(String mainText4) {
         this.mainText4 = mainText4;
-    }
-
-    public String getSubText4() {
-        return subText4;
-    }
-
-    public void setSubText4(String subText4) {
-        this.subText4 = subText4;
     }
 }

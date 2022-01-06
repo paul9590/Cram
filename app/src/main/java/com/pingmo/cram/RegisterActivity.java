@@ -63,7 +63,7 @@ public class RegisterActivity extends AppCompatActivity {
                 }
 
                 if(confirm){
-                    /*
+                    /*서버 측 코드임
                     RegisterRequest rR = new RegisterRequest(getString(R.string.SERVERIP), 8856, sb.toString());
                     rR.start();
 

@@ -17,7 +17,7 @@
         app:layout_constraintWidth_percent="0.8"
         >
         <ImageButton
-            android:id="@+id/imgHelp"
+            android:id="@+id/imbHelp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -27,13 +27,13 @@
             app:layout_constraintBottom_toTopOf="@id/mainTitle"
             app:layout_constraintBaseline_toBaselineOf="@id/imgUser"
             android:background="#00000000"
-            android:src="@drawable/helpsetting"/>
+            android:src="@drawable/imbhelp"/>
 
         <ImageView
             android:id="@+id/imgUser"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintBaseline_toBaselineOf="@id/imgHelp"
+            app:layout_constraintBaseline_toBaselineOf="@id/imbHelp"
             app:layout_constraintBottom_toTopOf="@id/mainTitle"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -62,7 +62,7 @@
 
 
         <Button
-            android:id="@+id/btnStart"
+            android:id="@+id/btnRoom"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="게임 시작"
@@ -77,7 +77,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:text="상점"
-            app:layout_constraintTop_toBottomOf="@id/btnStart"
+            app:layout_constraintTop_toBottomOf="@id/btnRoom"
             app:layout_constraintBottom_toTopOf="@id/btnSetting"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"/>
