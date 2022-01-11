@@ -2,6 +2,7 @@
     <string name="app_name">벼락치기</string>
     <string name="default_web_client">545673499784-5nd0fqq8qk0iv9huq8t6v3742kcd1223.apps.googleusercontent.com</string>
     <string name="SERVERIP">34.239.114.112</string>
+    <string name="PORT">8856</string>
 
     <string-array name="filter">
         <item>18년</item>

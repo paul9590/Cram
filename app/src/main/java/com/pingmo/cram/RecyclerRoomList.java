@@ -1,7 +1,5 @@
 package com.pingmo.cram;
 
-import android.graphics.drawable.Drawable;
-
 public class RecyclerRoomList {
     private Boolean imgLock;
     private String roomName;

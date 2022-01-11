@@ -24,7 +24,7 @@
         <activity android:name=".RegisterActivity"/>
         <activity android:name=".ShopActivity"/>
         <activity android:name=".RoomActivity"/>
-        <activity android:name=".GameActivity"/>
+        <activity android:name=".GameActivity" android:windowSoftInputMode="adjustPan"/>
 
     </application>
 
