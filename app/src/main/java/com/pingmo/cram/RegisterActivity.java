@@ -1,31 +1,19 @@
 package com.pingmo.cram;
 
 
-import android.annotation.SuppressLint;
-import android.app.Dialog;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.View;
-import android.view.Window;
-import android.webkit.JavascriptInterface;
-import android.webkit.WebChromeClient;
-import android.webkit.WebView;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 public class RegisterActivity extends AppCompatActivity {
 
-    private myDBHelper myDb;
+    private MyDBHelper myDb;
     private SQLiteDatabase sqlDB;
 
     @Override
@@ -77,7 +65,7 @@ public class RegisterActivity extends AppCompatActivity {
                     }
 
                      */
-                    myDb = new myDBHelper(getApplicationContext());
+                    myDb = new MyDBHelper(getApplicationContext());
                     sqlDB = myDb.getWritableDatabase();
                     sqlDB.execSQL("INSERT INTO userTB (userName) VALUES ('" + userName + "');");
                     sqlDB.close();

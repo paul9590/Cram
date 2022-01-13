@@ -28,8 +28,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
-import org.w3c.dom.Text;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -41,7 +39,7 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private int RC_SIGN_IN = 123;
 
-    private myDBHelper myDb;
+    private MyDBHelper myDb;
     private SQLiteDatabase sqlDB;
 
     @Override
@@ -85,13 +83,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
     }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-
-    }
+    
     @Override
     public void onRestart() {
         super.onRestart();
@@ -125,6 +117,7 @@ public class LoginActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             Log.d(TAG, "signInWithCredential:success");
                             // 만약 회원 가입에 성공한다면 RegisterActivity 띄우기
+                            // 서버측에 유저 정보 확인 해야댐
                             mAuth = FirebaseAuth.getInstance();
                             FirebaseUser user = mAuth.getCurrentUser();
                             Intent RegisterIntent = new Intent(getApplicationContext(), RegisterActivity.class);
@@ -144,9 +137,9 @@ public class LoginActivity extends AppCompatActivity {
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
-    // 초기 로그인 정보 확인
+    // Register 액티비티 또는 Main 액티비티에서 들어올때 로그인 여부 확인
     private void CheckLogin(){
-        myDb = new myDBHelper(this);
+        myDb = new MyDBHelper(this);
         sqlDB = myDb.getReadableDatabase();
         Cursor cur = sqlDB.rawQuery("SELECT * FROM userTB", null);
 

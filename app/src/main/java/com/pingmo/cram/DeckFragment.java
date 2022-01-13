@@ -1,5 +1,6 @@
 package com.pingmo.cram;
 
+import android.media.Image;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -7,6 +8,7 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -59,6 +61,17 @@ public class DeckFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_deck, container, false);
+        View rootView =  inflater.inflate(R.layout.fragment_deck, container, false);
+
+        ImageView [] imgDeck = {
+                (ImageView) rootView.findViewById(R.id.imgDeck1),
+                (ImageView) rootView.findViewById(R.id.imgDeck2),
+                (ImageView) rootView.findViewById(R.id.imgDeck3),
+                (ImageView) rootView.findViewById(R.id.imgDeck4),
+                (ImageView) rootView.findViewById(R.id.imgDeck5),
+                (ImageView) rootView.findViewById(R.id.imgDeck6),
+        };
+
+        return rootView;
     }
 }

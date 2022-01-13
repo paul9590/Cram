@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.os.Message;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -28,6 +29,9 @@ public class GameActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
 
+        TextView txtGameTitle = findViewById(R.id.txtGameTitle);
+        //서버 통신으로 받아 올 것
+
         ViewPager pager = findViewById(R.id.pagerGame);
         TabLayout tabLayout = findViewById(R.id.tabGame);
 
@@ -45,8 +49,8 @@ public class GameActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onStop() {
+        super.onStop();
         client.flagConnection = false;
         client.isConnected = false;
 

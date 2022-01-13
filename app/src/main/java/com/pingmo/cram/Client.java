@@ -7,6 +7,8 @@ import android.os.SystemClock;
 import android.util.Log;
 
 
+import androidx.annotation.NonNull;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.net.InetSocketAddress;
@@ -31,7 +33,6 @@ public class Client {
 
     String IP;
     int PORT;
-
     public Client(String ip, int port){
         IP = ip;
         PORT = port;
@@ -103,7 +104,7 @@ public class Client {
             Looper.prepare();
             writeHandler = new Handler(){
                 @Override
-                public void handleMessage(Message msg) {
+                public void handleMessage(@NonNull Message msg) {
                     try {
                         bout.write(((String)msg.obj).getBytes());
                         bout.flush();

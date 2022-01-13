@@ -4,8 +4,11 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Message;
 import android.view.KeyEvent;
@@ -17,12 +20,18 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link ChatFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
 public class ChatFragment extends Fragment {
+
+    RecyclerView mRecyclerView = null;
+    RecyclerChatAdapter mAdapter = null;
+    ArrayList<RecyclerChatList> mList;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -99,6 +108,28 @@ public class ChatFragment extends Fragment {
             }
         });
 
+        mRecyclerView = rootView.findViewById(R.id.viewChat);
+
+        mList = new ArrayList<>();
+        mAdapter = new RecyclerChatAdapter(mList);
+        mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false));
+
+        // 이부분 건들여서 서버 측 소스 코드 받아 올 것
+        String name;
+        String chat;
+        for(int i = 0; i < 100; i++) {
+            name = "paul";
+            chat = "호에에";
+            addItem(name, chat);
+        }
         return rootView;
+    }
+
+    private void addItem(String name, String chat) {
+        RecyclerChatList item = new RecyclerChatList();
+        item.setName(name);
+        item.setChat(chat);
+        mList.add(item);
     }
 }

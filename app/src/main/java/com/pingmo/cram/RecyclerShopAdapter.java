@@ -20,7 +20,7 @@ import java.util.ArrayList;
 
 public class RecyclerShopAdapter extends RecyclerView.Adapter<RecyclerShopAdapter.ShopViewHolder> {
     private ArrayList<RecyclerShopList> mData = null;
-    private Dialog imgDialog;
+    private Dialog shopDialog;
     public RecyclerShopAdapter(ArrayList<RecyclerShopList> data) {
         mData = data;
     }
@@ -36,44 +36,44 @@ public class RecyclerShopAdapter extends RecyclerView.Adapter<RecyclerShopAdapte
         vh.imageView1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                imgDialog = new Dialog(context);
-                imgDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                imgDialog.setContentView(R.layout.dial_shopimg);
-                imgDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                imgDial(vh.imageView1.getBackground(), vh.mainText1.getText().toString());
+                shopDialog = new Dialog(context);
+                shopDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                shopDialog.setContentView(R.layout.dial_shop);
+                shopDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                shopDial(vh.imageView1.getBackground(), vh.mainText1.getText().toString());
             }
         });
 
         vh.imageView2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                imgDialog = new Dialog(context);
-                imgDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                imgDialog.setContentView(R.layout.dial_shopimg);
-                imgDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                imgDial(vh.imageView2.getBackground(), vh.mainText2.getText().toString());
+                shopDialog = new Dialog(context);
+                shopDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                shopDialog.setContentView(R.layout.dial_shop);
+                shopDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                shopDial(vh.imageView2.getBackground(), vh.mainText2.getText().toString());
             }
         });
 
         vh.imageView3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                imgDialog = new Dialog(context);
-                imgDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                imgDialog.setContentView(R.layout.dial_shopimg);
-                imgDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                imgDial(vh.imageView3.getBackground(), vh.mainText3.getText().toString());
+                shopDialog = new Dialog(context);
+                shopDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                shopDialog.setContentView(R.layout.dial_shop);
+                shopDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                shopDial(vh.imageView3.getBackground(), vh.mainText3.getText().toString());
             }
         });
 
         vh.imageView4.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                imgDialog = new Dialog(context);
-                imgDialog.requestWindowFeature(Window.FEATURE_NO_TITLE); // 타이틀 제거
-                imgDialog.setContentView(R.layout.dial_shopimg);
-                imgDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                imgDial(vh.imageView4.getBackground(), vh.mainText4.getText().toString());
+                shopDialog = new Dialog(context);
+                shopDialog.requestWindowFeature(Window.FEATURE_NO_TITLE); // 타이틀 제거
+                shopDialog.setContentView(R.layout.dial_shop);
+                shopDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                shopDial(vh.imageView4.getBackground(), vh.mainText4.getText().toString());
             }
         });
 
@@ -134,13 +134,13 @@ public class RecyclerShopAdapter extends RecyclerView.Adapter<RecyclerShopAdapte
         }
     }
 
-    private void imgDial(Drawable shopImg, String shopTxt) {
-        imgDialog.show();
-        Button btnShopBuy = (Button) imgDialog.findViewById(R.id.btnShopBuy);
-        Button btnShopExit2 = (Button) imgDialog.findViewById(R.id.btnShopExit2);
+    private void shopDial(Drawable shopImg, String shopTxt) {
+        shopDialog.show();
+        Button btnShopBuy = (Button) shopDialog.findViewById(R.id.btnShopBuy);
+        Button btnShopExit2 = (Button) shopDialog.findViewById(R.id.btnShopExit2);
 
-        ImageView imgShopDetail = (ImageView) imgDialog.findViewById(R.id.imgShopDetail);
-        TextView txtShopDetail = (TextView) imgDialog.findViewById(R.id.txtShopDetail);
+        ImageView imgShopDetail = (ImageView) shopDialog.findViewById(R.id.imgShopDetail);
+        TextView txtShopDetail = (TextView) shopDialog.findViewById(R.id.txtShopDetail);
         imgShopDetail.setBackground(shopImg);
         txtShopDetail.setText(shopTxt);
 
@@ -154,7 +154,7 @@ public class RecyclerShopAdapter extends RecyclerView.Adapter<RecyclerShopAdapte
         btnShopExit2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                imgDialog.dismiss();
+                shopDialog.dismiss();
             }
         });
     }

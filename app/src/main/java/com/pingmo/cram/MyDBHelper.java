@@ -4,9 +4,9 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-public class myDBHelper extends SQLiteOpenHelper {
+public class MyDBHelper extends SQLiteOpenHelper {
 
-    public myDBHelper(Context context) {
+    public MyDBHelper(Context context) {
         super(context, "CramDB", null, 1);
     }
 
