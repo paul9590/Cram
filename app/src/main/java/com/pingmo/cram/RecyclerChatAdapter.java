@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 
 public class RecyclerChatAdapter extends RecyclerView.Adapter<RecyclerChatAdapter.ChatViewHolder> {
-    private ArrayList<RecyclerChatList> mData = null;
+    private ArrayList<RecyclerChatList> mData;
 
     public RecyclerChatAdapter(ArrayList<RecyclerChatList> data) {
         mData = data;

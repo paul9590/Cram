@@ -35,9 +35,9 @@ public class LoginActivity extends AppCompatActivity {
 
     private SignInButton btnLogin;
     private GoogleSignInClient mGoogleSignInClient;
-    private String TAG = "mainTag";
+    private final String TAG = "mainTag";
     private FirebaseAuth mAuth;
-    private int RC_SIGN_IN = 123;
+    private final int RC_SIGN_IN = 123;
 
     private MyDBHelper myDb;
     private SQLiteDatabase sqlDB;

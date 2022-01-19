@@ -1,11 +1,7 @@
 package com.pingmo.cram;
 
 import android.os.Bundle;
-import android.os.Message;
-import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,12 +13,9 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class GameActivity extends AppCompatActivity {
-
-    public Client client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,30 +33,6 @@ public class GameActivity extends AppCompatActivity {
 
         tabLayout.setupWithViewPager(pager);
 
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        client = new Client(getString(R.string.SERVERIP), Integer.parseInt(getString(R.string.PORT)));
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        client.flagConnection = false;
-        client.isConnected = false;
-
-        if (client.socket != null) {
-            client.flagRead = false;
-            client.writeHandler.getLooper().quit();
-            try {
-                client.bout.close();
-                client.bin.close();
-                client.socket.close();
-            } catch (IOException e) {
-            }
-        }
     }
 
     public static class ViewpagerAdapter extends FragmentPagerAdapter {

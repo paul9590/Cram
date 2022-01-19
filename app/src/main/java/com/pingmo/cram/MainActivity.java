@@ -8,22 +8,21 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
-import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -33,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
 
     private GoogleSignInClient mGoogleSignInClient;
     private FirebaseAuth mAuth;
-    private String TAG = "mainTag";
+    private final String TAG = "mainTag";
 
     private MyDBHelper myDb;
     private SQLiteDatabase sqlDB;
@@ -41,11 +40,19 @@ public class MainActivity extends AppCompatActivity {
     ProfileFragment profileFragment;
     String userName = "로그인을 해주세요.";
     String userInfo = "점수 : 0\n캐시 : 0";
+    Cram manager = null;
+
+    String [] message = {"안녕", "녕", "하", "세", "오"};
+    int cnt = 0;
+    Thread readThread;
+    Handler receiveHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        manager = Cram.getInstance();
 
         myDb = new MyDBHelper(this);
 
@@ -53,44 +60,67 @@ public class MainActivity extends AppCompatActivity {
         Button btnShop = (Button) findViewById(R.id.btnShop);
         Button btnSetting = (Button) findViewById(R.id.btnSetting);
         ImageView imgUser = (ImageView) findViewById(R.id.imgUser);
+        ImageButton imbHelp = (ImageButton) findViewById(R.id.imbHelp);
+
         imgUser.setImageResource(R.drawable.userimg);
 
         DrawerLayout drawLay = (DrawerLayout) findViewById(R.id.drawLay);
-        View drawView = (View) findViewById(R.id.viewProf);
+        ConstraintLayout drawView = (ConstraintLayout) findViewById(R.id.viewProf);
 
         profileFragment = new ProfileFragment();
 
-        imgUser.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                drawLay.openDrawer(drawView);
-                getSupportFragmentManager().beginTransaction().replace(R.id.viewProf, profileFragment).commit();
-            }
+        receiveHandler = new Handler(msg -> {
+            btnStart.setText("" + msg.obj);
+            return true;
         });
 
-        btnStart.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(checkLogin()) {
-                    Intent roomIntent = new Intent(getApplicationContext(), RoomActivity.class);
-                    roomIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                    startActivity(roomIntent);
-                }else {
-                    Toast.makeText(getApplicationContext(), "로그인이 필요합니다.", Toast.LENGTH_SHORT).show();
-                    Intent loginIntent = new Intent(getApplicationContext(), LoginActivity.class);
-                    loginIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                    startActivity(loginIntent);
+        readThread = new Thread(() -> {
+            while (true) {
+                try {
+                    if(manager.isConnected()) {
+                        manager.setHandler(receiveHandler);
+                    }
+                }catch (Exception ignored){
                 }
             }
         });
+        readThread.start();
 
-        btnShop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent shopIntent = new Intent(getApplicationContext(), ShopActivity.class);
-                shopIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                startActivity(shopIntent);
+        imgUser.setOnClickListener(v -> {
+            drawLay.openDrawer(drawView);
+            getSupportFragmentManager().beginTransaction().replace(R.id.viewProf, profileFragment).commit();
+        });
+
+        imbHelp.setOnClickListener(v -> {
+            if(manager.isConnected()) {
+                manager.send(message[cnt]);
+                if (cnt < message.length - 1) {
+                    cnt++;
+                } else {
+                    cnt--;
+                }
+            }else{
+                Toast.makeText(getApplicationContext(), "인터넷 연결을 확인해 주세요.", Toast.LENGTH_SHORT).show();
             }
+        });
+
+        btnStart.setOnClickListener(v -> {
+            if(checkLogin()) {
+                Intent roomIntent = new Intent(getApplicationContext(), RoomActivity.class);
+                roomIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                startActivity(roomIntent);
+            }else {
+                Toast.makeText(getApplicationContext(), "로그인이 필요합니다.", Toast.LENGTH_SHORT).show();
+                Intent loginIntent = new Intent(getApplicationContext(), LoginActivity.class);
+                loginIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                startActivity(loginIntent);
+            }
+        });
+
+        btnShop.setOnClickListener(v -> {
+            Intent shopIntent = new Intent(getApplicationContext(), ShopActivity.class);
+            shopIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+            startActivity(shopIntent);
         });
 
         // 구글 로그인 정보 불러오기
@@ -102,15 +132,12 @@ public class MainActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
 
-        btnSetting.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setDialog = new Dialog(MainActivity.this);
-                setDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                setDialog.setContentView(R.layout.dial_setting);
-                setDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                SetDial();
-            }
+        btnSetting.setOnClickListener(v -> {
+            setDialog = new Dialog(MainActivity.this);
+            setDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            setDialog.setContentView(R.layout.dial_setting);
+            setDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            SetDial();
         });
 
         sqlDB = myDb.getReadableDatabase();
@@ -128,6 +155,27 @@ public class MainActivity extends AppCompatActivity {
         }
         cur.close();
         sqlDB.close();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        manager.disconnect();
     }
 
     @Override
@@ -157,35 +205,22 @@ public class MainActivity extends AppCompatActivity {
         mAuth.signOut();
 
         mGoogleSignInClient.signOut().addOnCompleteListener(this,
-                new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        Toast.makeText(getApplicationContext(), "로그 아웃 되었습니다.", Toast.LENGTH_LONG).show();
-                    }
-                });
+                task -> Toast.makeText(getApplicationContext(), "로그 아웃 되었습니다.", Toast.LENGTH_LONG).show());
     }
 
     private void revokeAccess() {
         mAuth.signOut();
 
         mGoogleSignInClient.revokeAccess().addOnCompleteListener(this,
-                new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        Toast.makeText(getApplicationContext(), "로그 아웃 되었습니다.", Toast.LENGTH_LONG).show();
-                    }
-                });
+                task -> Toast.makeText(getApplicationContext(), "로그 아웃 되었습니다.", Toast.LENGTH_LONG).show());
     }
 
     private void DeleteUser() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if(user != null){
-            user.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    if (task.isSuccessful()) {
-                        Log.d(TAG, "User account deleted.");
-                    }
+            user.delete().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    Log.d(TAG, "User account deleted.");
                 }
             });
             signOut();
@@ -214,31 +249,25 @@ public class MainActivity extends AppCompatActivity {
         Button btnChange = (Button) setDialog.findViewById(R.id.btnChange);
         Button btnOut = (Button) setDialog.findViewById(R.id.btnOut);
 
-        btnChange.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                signOut();
-                setDialog.dismiss();
-                sqlDB = myDb.getWritableDatabase();
-                sqlDB.execSQL("DROP TABLE IF EXISTS userTB");
-                sqlDB.execSQL("CREATE TABLE userTB (userID VARCHAR(10) PRIMARY KEY, userName VARCHAR(20), friend VARCHAR(20), rank Integer);");
-                sqlDB.close();
-                onRestart();
-            }
+        btnChange.setOnClickListener(v -> {
+            signOut();
+            setDialog.dismiss();
+            sqlDB = myDb.getWritableDatabase();
+            sqlDB.execSQL("DROP TABLE IF EXISTS userTB");
+            sqlDB.execSQL("CREATE TABLE userTB (userID VARCHAR(10) PRIMARY KEY, userName VARCHAR(20), friend VARCHAR(20), rank Integer);");
+            sqlDB.close();
+            onRestart();
         });
 
         // 서버 측에도 삭제 요청 넣어야댐
-        btnOut.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DeleteUser();
-                setDialog.dismiss();
-                sqlDB = myDb.getWritableDatabase();
-                sqlDB.execSQL("DROP TABLE IF EXISTS userTB");
-                sqlDB.execSQL("CREATE TABLE userTB (userID VARCHAR(10) PRIMARY KEY, userName VARCHAR(20), friend VARCHAR(20), rank Integer);");
-                sqlDB.close();
-                onRestart();
-            }
+        btnOut.setOnClickListener(v -> {
+            DeleteUser();
+            setDialog.dismiss();
+            sqlDB = myDb.getWritableDatabase();
+            sqlDB.execSQL("DROP TABLE IF EXISTS userTB");
+            sqlDB.execSQL("CREATE TABLE userTB (userID VARCHAR(10) PRIMARY KEY, userName VARCHAR(20), friend VARCHAR(20), rank Integer);");
+            sqlDB.close();
+            onRestart();
         });
     }
 }

@@ -19,7 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 
 public class RecyclerShopAdapter extends RecyclerView.Adapter<RecyclerShopAdapter.ShopViewHolder> {
-    private ArrayList<RecyclerShopList> mData = null;
+    private ArrayList<RecyclerShopList> mData;
     private Dialog shopDialog;
     public RecyclerShopAdapter(ArrayList<RecyclerShopList> data) {
         mData = data;
@@ -33,48 +33,36 @@ public class RecyclerShopAdapter extends RecyclerView.Adapter<RecyclerShopAdapte
         View view = inflater.inflate(R.layout.recycler_shop, parent, false);
         ShopViewHolder vh = new ShopViewHolder(view);
 
-        vh.imageView1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                shopDialog = new Dialog(context);
-                shopDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                shopDialog.setContentView(R.layout.dial_shop);
-                shopDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                shopDial(vh.imageView1.getBackground(), vh.mainText1.getText().toString());
-            }
+        vh.imageView1.setOnClickListener(v -> {
+            shopDialog = new Dialog(context);
+            shopDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            shopDialog.setContentView(R.layout.dial_shop);
+            shopDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            shopDial(vh.imageView1.getBackground(), vh.mainText1.getText().toString());
         });
 
-        vh.imageView2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                shopDialog = new Dialog(context);
-                shopDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                shopDialog.setContentView(R.layout.dial_shop);
-                shopDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                shopDial(vh.imageView2.getBackground(), vh.mainText2.getText().toString());
-            }
+        vh.imageView2.setOnClickListener(v -> {
+            shopDialog = new Dialog(context);
+            shopDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            shopDialog.setContentView(R.layout.dial_shop);
+            shopDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            shopDial(vh.imageView2.getBackground(), vh.mainText2.getText().toString());
         });
 
-        vh.imageView3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                shopDialog = new Dialog(context);
-                shopDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                shopDialog.setContentView(R.layout.dial_shop);
-                shopDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                shopDial(vh.imageView3.getBackground(), vh.mainText3.getText().toString());
-            }
+        vh.imageView3.setOnClickListener(v -> {
+            shopDialog = new Dialog(context);
+            shopDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            shopDialog.setContentView(R.layout.dial_shop);
+            shopDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            shopDial(vh.imageView3.getBackground(), vh.mainText3.getText().toString());
         });
 
-        vh.imageView4.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                shopDialog = new Dialog(context);
-                shopDialog.requestWindowFeature(Window.FEATURE_NO_TITLE); // 타이틀 제거
-                shopDialog.setContentView(R.layout.dial_shop);
-                shopDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                shopDial(vh.imageView4.getBackground(), vh.mainText4.getText().toString());
-            }
+        vh.imageView4.setOnClickListener(v -> {
+            shopDialog = new Dialog(context);
+            shopDialog.requestWindowFeature(Window.FEATURE_NO_TITLE); // 타이틀 제거
+            shopDialog.setContentView(R.layout.dial_shop);
+            shopDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            shopDial(vh.imageView4.getBackground(), vh.mainText4.getText().toString());
         });
 
 
@@ -144,18 +132,10 @@ public class RecyclerShopAdapter extends RecyclerView.Adapter<RecyclerShopAdapte
         imgShopDetail.setBackground(shopImg);
         txtShopDetail.setText(shopTxt);
 
-        btnShopBuy.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // 서버 측 연결로 구매 날려야댐
-            }
+        btnShopBuy.setOnClickListener(v -> {
+            // 서버 측 연결로 구매 날려야댐
         });
 
-        btnShopExit2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                shopDialog.dismiss();
-            }
-        });
+        btnShopExit2.setOnClickListener(v -> shopDialog.dismiss());
     }
 }

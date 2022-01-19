@@ -1,35 +1,24 @@
 package com.pingmo.cram;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.widget.Button;
 import android.widget.Filter;
 import android.widget.Filterable;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
 
 public class RecyclerRoomAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements Filterable {
-    private ArrayList<RecyclerRoomList> mData = null;
-    private ArrayList<RecyclerRoomList> filterList = null;
+    private ArrayList<RecyclerRoomList> mData;
+    private ArrayList<RecyclerRoomList> filterList;
     Context context;
     private final int VIEW_TYPE_ITEM = 0;
     private final int VIEW_TYPE_LOADING = 1;

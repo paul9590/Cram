@@ -1,15 +1,6 @@
 package com.pingmo.cram;
 
-import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-
-import androidx.core.content.res.ResourcesCompat;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.os.Message;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -17,8 +8,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Toast;
+
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
@@ -90,7 +83,6 @@ public class ChatFragment extends Fragment {
                     if (!editChat.getText().toString().trim().equals("")) {
                         Message msg = new Message();
                         msg.obj = editChat.getText().toString();
-                        ((GameActivity)getActivity()).client.writeHandler.sendMessage(msg);
                     }
                     return true;
                 }
@@ -103,7 +95,6 @@ public class ChatFragment extends Fragment {
                 if (!editChat.getText().toString().trim().equals("")) {
                     Message msg = new Message();
                     msg.obj = editChat.getText().toString();
-                    ((GameActivity) getActivity()).client.writeHandler.sendMessage(msg);
                 }
             }
         });
