@@ -1,9 +1,12 @@
 package com.pingmo.cram;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -11,6 +14,8 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
@@ -78,6 +83,10 @@ public class ProfileFragment extends Fragment {
         TextView txtUser = rootView.findViewById(R.id.txtUser);
         TextView txtUserInfo = rootView.findViewById(R.id.txtUserInfo);
 
+        Button btnNotice = rootView.findViewById(R.id.btnNotice);
+        Button btnHelp = rootView.findViewById(R.id.btnHelp);
+        Button btnAsk = rootView.findViewById(R.id.btnAsk);
+
         imgUser2.setImageResource(R.drawable.help);
 
         String userName = ((MainActivity)getActivity()).userName;
@@ -85,6 +94,22 @@ public class ProfileFragment extends Fragment {
 
         txtUser.setText(userName);
         txtUserInfo.setText(userInfo);
+        btnNotice.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent noticeIntent = new Intent(getActivity(), NoticeActivity.class);
+                noticeIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                startActivity(noticeIntent);
+            }
+        });
+
+        btnAsk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent kakaoIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://open.kakao.com/o/st82Ogpd"));
+                startActivity(kakaoIntent);
+            }
+        });
 
 
         DrawerLayout drawLay = getActivity().findViewById(R.id.drawLay);

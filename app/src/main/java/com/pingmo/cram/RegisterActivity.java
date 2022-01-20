@@ -4,6 +4,7 @@ package com.pingmo.cram;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -11,10 +12,16 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.auth.FirebaseUser;
+
 public class RegisterActivity extends AppCompatActivity {
 
     private MyDBHelper myDb;
     private SQLiteDatabase sqlDB;
+
+    Handler registerHandler;
+    Cram cram = Cram.getInstance();
+    String userName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +38,7 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 StringBuilder sb = new StringBuilder();
-                String userName = editUser.getText().toString();
+                userName = editUser.getText().toString();
                 Boolean confirm = true;
 
                 for(int i = 0; i < filter.length; i++) {
@@ -51,27 +58,28 @@ public class RegisterActivity extends AppCompatActivity {
                 }
 
                 if(confirm){
-                    /*서버 측 코드임
-                    RegisterRequest rR = new RegisterRequest(getString(R.string.SERVERIP), 8856, sb.toString());
-                    rR.start();
-
-                    Toast.makeText(getApplicationContext(), ""+rR.isCompleted(), Toast.LENGTH_SHORT).show();
-                    if(rR.isCompleted().equals("1")) {
-                        myDb = new myDBHelper(getApplicationContext());
-                        sqlDB = myDb.getWritableDatabase();
-                        sqlDB.execSQL("INSERT INTO userTB (userName) VALUES ('" + userName + "');");
-                        sqlDB.close();
-                        finish();
+                    // 서버로 유저 이름 보내기
+                    if(cram.isConnected()) {
+                        cram.send(userName);
+                    }else {
+                        Toast.makeText(getApplicationContext(), "인터넷 연결을 확인해 주세요.", Toast.LENGTH_SHORT).show();
                     }
-
-                     */
-                    myDb = new MyDBHelper(getApplicationContext());
-                    sqlDB = myDb.getWritableDatabase();
-                    sqlDB.execSQL("INSERT INTO userTB (userName) VALUES ('" + userName + "');");
-                    sqlDB.close();
-                    finish();
                 }
             }
+        });
+
+        registerHandler = new Handler(msg -> {
+            // isValidate?
+            if(true) {
+                myDb = new MyDBHelper(getApplicationContext());
+                sqlDB = myDb.getWritableDatabase();
+                sqlDB.execSQL("INSERT INTO userTB (userName) VALUES ('" + userName + "');");
+                sqlDB.close();
+                finish();
+            }else{
+                Toast.makeText(getApplicationContext(), "이미 사용 중인 이름입니다.", Toast.LENGTH_SHORT).show();
+            }
+            return true;
         });
 
     }
@@ -80,6 +88,12 @@ public class RegisterActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         overridePendingTransition(0, 0);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        cram.setHandler(registerHandler);
     }
 
 }

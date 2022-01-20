@@ -40,9 +40,8 @@ public class MainActivity extends AppCompatActivity {
     ProfileFragment profileFragment;
     String userName = "로그인을 해주세요.";
     String userInfo = "점수 : 0\n캐시 : 0";
-    Cram manager = Cram.getInstance();
+    Cram cram = Cram.getInstance();
 
-    String [] message = {"안녕", "녕", "하", "세", "오"};
     int cnt = 0;
     Thread readThread;
     Handler mainHandler;
@@ -68,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
         profileFragment = new ProfileFragment();
 
         mainHandler = new Handler(msg -> {
-            btnStart.setText("" + msg.obj);
+
             return true;
         });
 
@@ -76,8 +75,8 @@ public class MainActivity extends AppCompatActivity {
             while (true) {
                 try {
                     Thread.sleep(1);
-                    if(manager.isConnected()) {
-                        manager.setHandler(mainHandler);
+                    if(cram.isConnected()) {
+                        cram.setHandler(mainHandler);
                         break;
                     }
                 }catch (Exception ignored){
@@ -92,16 +91,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         imbHelp.setOnClickListener(v -> {
-            if(manager.isConnected()) {
-                manager.send(message[cnt]);
-                if (cnt < message.length - 1) {
-                    cnt++;
-                } else {
-                    cnt--;
-                }
-            }else{
-                Toast.makeText(getApplicationContext(), "인터넷 연결을 확인해 주세요.", Toast.LENGTH_SHORT).show();
-            }
+
         });
 
         btnStart.setOnClickListener(v -> {
@@ -158,21 +148,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-        manager.setHandler(null);
-    }
-
-    @Override
     protected void onDestroy() {
         super.onDestroy();
-        manager.disconnect();
+        cram.disconnect();
     }
 
     @Override
     protected void onRestart() {
         super.onRestart();
-        manager.setHandler(mainHandler);
+        cram.setHandler(mainHandler);
         sqlDB = myDb.getReadableDatabase();
         userName = "로그인을 해주세요.";
         userInfo = "점수 : 0\n캐시 : 0";
@@ -245,8 +229,7 @@ public class MainActivity extends AppCompatActivity {
             signOut();
             setDialog.dismiss();
             sqlDB = myDb.getWritableDatabase();
-            sqlDB.execSQL("DROP TABLE IF EXISTS userTB");
-            sqlDB.execSQL("CREATE TABLE userTB (userID VARCHAR(10) PRIMARY KEY, userName VARCHAR(20), friend VARCHAR(20), rank Integer);");
+            myDb.truncateTB(sqlDB);
             sqlDB.close();
             onRestart();
         });
@@ -256,8 +239,7 @@ public class MainActivity extends AppCompatActivity {
             DeleteUser();
             setDialog.dismiss();
             sqlDB = myDb.getWritableDatabase();
-            sqlDB.execSQL("DROP TABLE IF EXISTS userTB");
-            sqlDB.execSQL("CREATE TABLE userTB (userID VARCHAR(10) PRIMARY KEY, userName VARCHAR(20), friend VARCHAR(20), rank Integer);");
+            myDb.truncateTB(sqlDB);
             sqlDB.close();
             onRestart();
         });

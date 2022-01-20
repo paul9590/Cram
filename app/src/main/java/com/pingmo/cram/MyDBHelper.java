@@ -13,11 +13,15 @@ public class MyDBHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE userTB (userID VARCHAR(10) PRIMARY KEY, userName VARCHAR(20), friend VARCHAR(20), rank Integer);");
-
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        db.execSQL("DROP TABLE IF EXISTS userTB");
+        onCreate(db);
+    }
+
+    public void truncateTB(SQLiteDatabase db) {
         db.execSQL("DROP TABLE IF EXISTS userTB");
         onCreate(db);
     }

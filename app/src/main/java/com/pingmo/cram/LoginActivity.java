@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.util.Linkify;
 import android.util.Log;
 import android.view.View;
@@ -41,6 +42,10 @@ public class LoginActivity extends AppCompatActivity {
 
     private MyDBHelper myDb;
     private SQLiteDatabase sqlDB;
+
+    Handler loginHandler;
+    Cram cram = Cram.getInstance();
+    FirebaseUser user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,9 +84,30 @@ public class LoginActivity extends AppCompatActivity {
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                signIn();
+                if(cram.isConnected()) {
+                    signIn();
+                }else{
+                    Toast.makeText(getApplicationContext(), "인터넷 연결을 확인해 주세요.", Toast.LENGTH_SHORT).show();
+                }
             }
         });
+        loginHandler = new Handler(msg -> {
+            // 아이디 확인 되면 메인 액티비티로
+            if(false) {
+                // insert into user 테이블
+            }else{
+                Intent RegisterIntent = new Intent(getApplicationContext(), RegisterActivity.class);
+                RegisterIntent.putExtra("UID", user.getUid());
+                RegisterIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                startActivity(RegisterIntent);
+            }
+            return true;
+        });
+    }
+    @Override
+    public void onStart() {
+        super.onStart();
+        cram.setHandler(loginHandler);
     }
     
     @Override
@@ -119,11 +145,8 @@ public class LoginActivity extends AppCompatActivity {
                             // 만약 회원 가입에 성공한다면 RegisterActivity 띄우기
                             // 서버측에 유저 정보 확인 해야댐
                             mAuth = FirebaseAuth.getInstance();
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            Intent RegisterIntent = new Intent(getApplicationContext(), RegisterActivity.class);
-                            RegisterIntent.putExtra("UID", user.getUid());
-                            RegisterIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                            startActivity(RegisterIntent);
+                            user = mAuth.getCurrentUser();
+                            cram.send(user.getUid());
                         } else {
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
                             Toast.makeText(getApplicationContext(), "Authentication Failed", Toast.LENGTH_LONG).show();

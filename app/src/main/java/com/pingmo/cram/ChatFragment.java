@@ -28,9 +28,8 @@ public class ChatFragment extends Fragment {
     RecyclerView mRecyclerView = null;
     RecyclerChatAdapter mAdapter = null;
     ArrayList<RecyclerChatList> mList;
-    Thread readThread;
     Handler chatHandler;
-    Cram manager = Cram.getInstance();
+    Cram cram = Cram.getInstance();
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -87,7 +86,7 @@ public class ChatFragment extends Fragment {
                 if(keyCode == event.KEYCODE_ENTER){
                     if (!editChat.getText().toString().trim().equals("")) {
                         String s = editChat.getText().toString();
-                        manager.send(s);
+                        cram.send(s);
                     }
                     return true;
                 }
@@ -99,7 +98,7 @@ public class ChatFragment extends Fragment {
             public void onClick(View v) {
                 if (!editChat.getText().toString().trim().equals("")) {
                     String s = editChat.getText().toString();
-                    manager.send(s);
+                    cram.send(s);
                 }
             }
         });
@@ -125,13 +124,7 @@ public class ChatFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        manager.setHandler(chatHandler);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        manager.setHandler(null);
+        cram.setHandler(chatHandler);
     }
 
     public void addItem(String name, String chat) {

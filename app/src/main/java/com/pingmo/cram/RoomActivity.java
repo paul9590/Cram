@@ -2,6 +2,8 @@ package com.pingmo.cram;
 
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,6 +22,8 @@ public class RoomActivity extends AppCompatActivity {
     RecyclerRoomAdapter mAdapter = null;
     ArrayList<RecyclerRoomList> mList;
     Boolean isLoading = false;
+    Cram cram = Cram.getInstance();
+    Handler roomHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +63,26 @@ public class RoomActivity extends AppCompatActivity {
             }
         });
 
+        // 방 목록 불러 와야함
+        roomHandler = new Handler(msg -> {
+            if(msg.obj != null) {
+                addItem(false, "hwang", "1/8");
+            }
+            return true;
+        });
 
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        cram.setHandler(roomHandler);
+        // 초기 방 목록 10개 정도 불러오기
+        if(cram.isConnected()) {
+            cram.send("r&1");
+        }else{
+            Toast.makeText(getApplicationContext(), "인터넷 연결을 확인해 주세요.", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void addItem(Boolean isLock, String roomName, String roomInfo) {
@@ -68,6 +91,7 @@ public class RoomActivity extends AppCompatActivity {
         item.setRoomName(roomName);
         item.setRoomInfo(roomInfo);
         mList.add(item);
+        mAdapter.notifyDataSetChanged();
     }
 
     private void loadMore() {
@@ -81,15 +105,17 @@ public class RoomActivity extends AppCompatActivity {
                 mList.remove(mList.size() - 1);
                 int scrollPosition = mList.size();
                 mAdapter.notifyItemRemoved(scrollPosition);
+                cram.send("r&1");
+                /*
                 int currentSize = scrollPosition;
                 int nextLimit = currentSize + 10;
 
                 while (currentSize - 1 < nextLimit) {
                     // 여기서 방 불러오는 서버 코드
-                    addItem(false, "hwang", "1/8");
-                    addItem(true, "paul", "8/8");
+
                     currentSize++;
                 }
+                 */
 
                 Collections.sort(mList, new Comparator<RecyclerRoomList>() {
                     @Override

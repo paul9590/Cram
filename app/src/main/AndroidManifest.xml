@@ -26,6 +26,7 @@
         <activity android:name=".ShopActivity"/>
         <activity android:name=".RoomActivity"/>
         <activity android:name=".GameActivity" android:windowSoftInputMode="adjustPan"/>
+        <activity android:name=".NoticeActivity"/>
 
         <service android:name=".ClientService"
             android:enabled="true"
