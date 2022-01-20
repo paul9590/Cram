@@ -1,6 +1,7 @@
 package com.pingmo.cram;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -16,6 +17,7 @@ import com.google.android.material.tabs.TabLayout;
 import java.util.ArrayList;
 
 public class GameActivity extends AppCompatActivity {
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -1,13 +1,16 @@
 package com.pingmo.cram;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -25,6 +28,9 @@ public class ChatFragment extends Fragment {
     RecyclerView mRecyclerView = null;
     RecyclerChatAdapter mAdapter = null;
     ArrayList<RecyclerChatList> mList;
+    Thread readThread;
+    Handler chatHandler;
+    Cram manager = Cram.getInstance();
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -75,14 +81,13 @@ public class ChatFragment extends Fragment {
         EditText editChat = (EditText) rootView.findViewById(R.id.editChat);
         Button btnChatSend = (Button) rootView.findViewById(R.id.btnChatSend);
 
-
         editChat.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if(keyCode == event.KEYCODE_ENTER){
                     if (!editChat.getText().toString().trim().equals("")) {
-                        Message msg = new Message();
-                        msg.obj = editChat.getText().toString();
+                        String s = editChat.getText().toString();
+                        manager.send(s);
                     }
                     return true;
                 }
@@ -93,8 +98,8 @@ public class ChatFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if (!editChat.getText().toString().trim().equals("")) {
-                    Message msg = new Message();
-                    msg.obj = editChat.getText().toString();
+                    String s = editChat.getText().toString();
+                    manager.send(s);
                 }
             }
         });
@@ -106,21 +111,34 @@ public class ChatFragment extends Fragment {
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false));
 
-        // 이부분 건들여서 서버 측 소스 코드 받아 올 것
-        String name;
-        String chat;
-        for(int i = 0; i < 100; i++) {
-            name = "paul";
-            chat = "호에에";
+
+        chatHandler = new Handler(msg -> {
+            String name = msg.obj.toString();
+            String chat = msg.obj.toString();
             addItem(name, chat);
-        }
+            return true;
+        });
+
         return rootView;
     }
 
-    private void addItem(String name, String chat) {
+    @Override
+    public void onStart() {
+        super.onStart();
+        manager.setHandler(chatHandler);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        manager.setHandler(null);
+    }
+
+    public void addItem(String name, String chat) {
         RecyclerChatList item = new RecyclerChatList();
         item.setName(name);
         item.setChat(chat);
         mList.add(item);
+        mAdapter.notifyDataSetChanged();
     }
 }

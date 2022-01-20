@@ -8,6 +8,7 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
 import android.os.SystemClock;
+import android.util.Log;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -101,7 +102,7 @@ public class ClientService extends Service {
     }
 
     public void setHandler(Handler handler) {
-        this.receiveHandler = handler;
+        receiveHandler = handler;
     }
 
     class SocketThread extends Thread {

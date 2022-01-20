@@ -157,5 +157,6 @@ public class Shop1Fragment extends Fragment {
         item.setImgShop4(icon[3]);
         item.setMainText4(mainText[3]);
         mList.add(item);
+        mAdapter.notifyDataSetChanged();
     }
 }

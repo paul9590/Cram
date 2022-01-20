@@ -40,19 +40,17 @@ public class MainActivity extends AppCompatActivity {
     ProfileFragment profileFragment;
     String userName = "로그인을 해주세요.";
     String userInfo = "점수 : 0\n캐시 : 0";
-    Cram manager = null;
+    Cram manager = Cram.getInstance();
 
     String [] message = {"안녕", "녕", "하", "세", "오"};
     int cnt = 0;
     Thread readThread;
-    Handler receiveHandler;
+    Handler mainHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        manager = Cram.getInstance();
 
         myDb = new MyDBHelper(this);
 
@@ -69,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
 
         profileFragment = new ProfileFragment();
 
-        receiveHandler = new Handler(msg -> {
+        mainHandler = new Handler(msg -> {
             btnStart.setText("" + msg.obj);
             return true;
         });
@@ -77,8 +75,10 @@ public class MainActivity extends AppCompatActivity {
         readThread = new Thread(() -> {
             while (true) {
                 try {
+                    Thread.sleep(1);
                     if(manager.isConnected()) {
-                        manager.setHandler(receiveHandler);
+                        manager.setHandler(mainHandler);
+                        break;
                     }
                 }catch (Exception ignored){
                 }
@@ -158,18 +158,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
     protected void onPause() {
         super.onPause();
+        manager.setHandler(null);
     }
 
     @Override
@@ -181,6 +172,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onRestart() {
         super.onRestart();
+        manager.setHandler(mainHandler);
         sqlDB = myDb.getReadableDatabase();
         userName = "로그인을 해주세요.";
         userInfo = "점수 : 0\n캐시 : 0";

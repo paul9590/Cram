@@ -34,7 +34,6 @@ public class RecyclerChatAdapter extends RecyclerView.Adapter<RecyclerChatAdapte
         RecyclerChatList item = mData.get(position);
         String txt = item.getName() + " : " + item.getChat();
         holder.txtChat.setText(txt);
-
     }
 
     @Override public int getItemCount() {
