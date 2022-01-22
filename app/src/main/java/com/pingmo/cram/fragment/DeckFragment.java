@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
@@ -71,6 +72,14 @@ public class DeckFragment extends Fragment {
                 (ImageView) rootView.findViewById(R.id.imgDeck5),
                 (ImageView) rootView.findViewById(R.id.imgDeck6),
         };
+        for(int i = 0; i < imgDeck.length; i++) {
+            imgDeck[i].setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(getActivity(), "?", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
 
         return rootView;
     }

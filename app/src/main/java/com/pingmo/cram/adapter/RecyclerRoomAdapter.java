@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.pingmo.cram.R;
+import com.pingmo.cram.list.RecyclerNoticeList;
 import com.pingmo.cram.list.RecyclerRoomList;
 import com.pingmo.cram.activity.GameActivity;
 
@@ -133,9 +134,14 @@ public class RecyclerRoomAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 @Override
                 public void onClick(View v) {
                     // 방 번호 받아서 실행 비밀번호 확인 및 인원수 체크
-                    Intent gameIntent = new Intent(context, GameActivity.class);
-                    gameIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                    context.startActivity(gameIntent);
+                    int pos = getAdapterPosition();
+                    if(pos != RecyclerView.NO_POSITION) {
+                        RecyclerRoomList item = mData.get(pos);
+                        Intent gameIntent = new Intent(context, GameActivity.class);
+                        gameIntent.putExtra("roomName", item.getRoomName());
+                        gameIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                        context.startActivity(gameIntent);
+                    }
                 }
             });
         }

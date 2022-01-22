@@ -79,6 +79,7 @@ public class ChatFragment extends Fragment {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_chat, container, false);
 
+        /*
         EditText editChat = (EditText) rootView.findViewById(R.id.editChat);
         Button btnChatSend = (Button) rootView.findViewById(R.id.btnChatSend);
         mRecyclerView = rootView.findViewById(R.id.viewChat);
@@ -112,6 +113,7 @@ public class ChatFragment extends Fragment {
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false));
 
+         */
         chatHandler = new Handler(msg -> {
             String name = msg.obj.toString();
             String chat = msg.obj.toString();

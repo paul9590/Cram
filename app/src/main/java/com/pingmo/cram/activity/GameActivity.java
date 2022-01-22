@@ -1,7 +1,11 @@
 package com.pingmo.cram.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -26,11 +30,35 @@ public class GameActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
 
+        Intent gameIntent = getIntent();
+        String roomName = gameIntent.getStringExtra("roomName");
+
         TextView txtGameTitle = findViewById(R.id.txtGameTitle);
-        //서버 통신으로 받아 올 것
 
         ViewPager pager = findViewById(R.id.pagerGame);
         TabLayout tabLayout = findViewById(R.id.tabGame);
+
+        ImageView imgPlayer [] = {
+                findViewById(R.id.imgPlayer1),
+                findViewById(R.id.imgPlayer2),
+                findViewById(R.id.imgPlayer3),
+                findViewById(R.id.imgPlayer4),
+                findViewById(R.id.imgPlayer5),
+                findViewById(R.id.imgPlayer6),
+                findViewById(R.id.imgPlayer7),
+                findViewById(R.id.imgPlayer8),
+        };
+        for(int i = 0; i < imgPlayer.length; i++) {
+            imgPlayer[i].setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(getApplicationContext(), "" + v.getX(), Toast.LENGTH_SHORT).show();
+                    v.getY();
+                }
+            });
+        }
+
+        txtGameTitle.setText(roomName);
 
         GameActivity.ViewpagerAdapter adapter = new GameActivity.ViewpagerAdapter(getSupportFragmentManager());
         pager.setAdapter(adapter);
