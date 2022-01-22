@@ -82,7 +82,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.6"
+            app:layout_constraintGuide_percent="0.8"
             />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -92,50 +92,19 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.6"
+        app:layout_constraintGuide_percent="0.8"
         />
 
     <Button
-        android:id="@+id/btnNotice"
+        android:id="@+id/btnLogOut"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="공지 사항"
-        android:layout_marginTop="20dp"
+        android:text="로그 아웃"
         android:textSize="20dp"
         android:gravity="left"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
         style="?android:borderlessButtonStyle"
-        app:layout_constraintTop_toBottomOf="@id/guideProHo3"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
-
-    <Button
-        android:id="@+id/btnHelp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="도움말"
-        android:textSize="20dp"
-        android:gravity="left"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
-        style="?android:borderlessButtonStyle"
-        app:layout_constraintTop_toBottomOf="@id/btnNotice"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
-
-    <Button
-        android:id="@+id/btnAsk"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="문의 및 버그 제보"
-        android:textSize="20dp"
-        android:gravity="left"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
-        style="?android:borderlessButtonStyle"
-        app:layout_constraintTop_toBottomOf="@id/btnHelp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/guideProHo3"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

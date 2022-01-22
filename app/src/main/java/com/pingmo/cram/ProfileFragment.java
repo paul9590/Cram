@@ -1,5 +1,6 @@
 package com.pingmo.cram;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -83,9 +84,7 @@ public class ProfileFragment extends Fragment {
         TextView txtUser = rootView.findViewById(R.id.txtUser);
         TextView txtUserInfo = rootView.findViewById(R.id.txtUserInfo);
 
-        Button btnNotice = rootView.findViewById(R.id.btnNotice);
-        Button btnHelp = rootView.findViewById(R.id.btnHelp);
-        Button btnAsk = rootView.findViewById(R.id.btnAsk);
+        Button btnLogOut = rootView.findViewById(R.id.btnLogOut);
 
         imgUser2.setImageResource(R.drawable.help);
 
@@ -94,24 +93,6 @@ public class ProfileFragment extends Fragment {
 
         txtUser.setText(userName);
         txtUserInfo.setText(userInfo);
-        btnNotice.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent noticeIntent = new Intent(getActivity(), NoticeActivity.class);
-                noticeIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                startActivity(noticeIntent);
-            }
-        });
-
-        btnAsk.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent kakaoIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://open.kakao.com/o/st82Ogpd"));
-                startActivity(kakaoIntent);
-            }
-        });
-
-
         DrawerLayout drawLay = getActivity().findViewById(R.id.drawLay);
 
         mList = new ArrayList<>();
@@ -126,6 +107,13 @@ public class ProfileFragment extends Fragment {
                 }else{
                     drawLay.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
                 }
+            }
+        });
+
+        btnLogOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((MainActivity)getActivity()).signOut();
             }
         });
 

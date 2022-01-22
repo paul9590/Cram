@@ -7,9 +7,11 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.media.Image;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -27,22 +29,22 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity {
-
-    private Dialog setDialog;
-
+    
     private GoogleSignInClient mGoogleSignInClient;
     private FirebaseAuth mAuth;
     private final String TAG = "mainTag";
 
-    private MyDBHelper myDb;
-    private SQLiteDatabase sqlDB;
+    public MyDBHelper myDb;
+    public SQLiteDatabase sqlDB;
 
     ProfileFragment profileFragment;
+    SettingFragment settingFragment;
+    
     String userName = "로그인을 해주세요.";
     String userInfo = "점수 : 0\n캐시 : 0";
+    
     Cram cram = Cram.getInstance();
 
-    int cnt = 0;
     Thread readThread;
     Handler mainHandler;
 
@@ -55,22 +57,25 @@ public class MainActivity extends AppCompatActivity {
 
         Button btnStart = (Button) findViewById(R.id.btnRoom);
         Button btnShop = (Button) findViewById(R.id.btnShop);
-        Button btnSetting = (Button) findViewById(R.id.btnSetting);
         ImageView imgUser = (ImageView) findViewById(R.id.imgUser);
-        ImageButton imbHelp = (ImageButton) findViewById(R.id.imbHelp);
+        ImageButton imbSetting = (ImageButton) findViewById(R.id.imbSetting);
 
         imgUser.setImageResource(R.drawable.userimg);
 
         DrawerLayout drawLay = (DrawerLayout) findViewById(R.id.drawLay);
-        ConstraintLayout drawView = (ConstraintLayout) findViewById(R.id.viewProf);
+        ConstraintLayout viewProf = (ConstraintLayout) findViewById(R.id.viewProf);
+        ConstraintLayout viewSetting = (ConstraintLayout) findViewById(R.id.viewSetting);
 
         profileFragment = new ProfileFragment();
+        settingFragment = new SettingFragment();
 
+        //서버 측 코드 받아오는 핸들러
         mainHandler = new Handler(msg -> {
 
             return true;
         });
 
+        // 초기 핸들러 설정
         readThread = new Thread(() -> {
             while (true) {
                 try {
@@ -85,13 +90,19 @@ public class MainActivity extends AppCompatActivity {
         });
         readThread.start();
 
-        imgUser.setOnClickListener(v -> {
-            drawLay.openDrawer(drawView);
-            getSupportFragmentManager().beginTransaction().replace(R.id.viewProf, profileFragment).commit();
+        //왼쪽 햄버거
+        imbSetting.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                drawLay.openDrawer(viewSetting);
+                getSupportFragmentManager().beginTransaction().replace(R.id.viewSetting, settingFragment).commit();
+            }
         });
 
-        imbHelp.setOnClickListener(v -> {
-
+        //오른쪽 프로필
+        imgUser.setOnClickListener(v -> {
+            drawLay.openDrawer(viewProf);
+            getSupportFragmentManager().beginTransaction().replace(R.id.viewProf, profileFragment).commit();
         });
 
         btnStart.setOnClickListener(v -> {
@@ -121,14 +132,6 @@ public class MainActivity extends AppCompatActivity {
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
         mAuth = FirebaseAuth.getInstance();
-
-        btnSetting.setOnClickListener(v -> {
-            setDialog = new Dialog(MainActivity.this);
-            setDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-            setDialog.setContentView(R.layout.dial_setting);
-            setDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            SetDial();
-        });
 
         sqlDB = myDb.getReadableDatabase();
         Cursor cur = sqlDB.rawQuery("SELECT * FROM userTB", null);
@@ -177,21 +180,27 @@ public class MainActivity extends AppCompatActivity {
         profileFragment = new ProfileFragment();
     }
 
-    private void signOut() {
+    public void signOut() {
         mAuth.signOut();
 
         mGoogleSignInClient.signOut().addOnCompleteListener(this,
                 task -> Toast.makeText(getApplicationContext(), "로그 아웃 되었습니다.", Toast.LENGTH_LONG).show());
+
+        sqlDB = myDb.getWritableDatabase();
+        myDb.truncateTB(sqlDB);
+        sqlDB.close();
+        onRestart();
     }
 
-    private void revokeAccess() {
+    public void revokeAccess() {
         mAuth.signOut();
 
         mGoogleSignInClient.revokeAccess().addOnCompleteListener(this,
                 task -> Toast.makeText(getApplicationContext(), "로그 아웃 되었습니다.", Toast.LENGTH_LONG).show());
     }
 
-    private void DeleteUser() {
+    //서버 측에도 삭제 요청 넣어야 함
+    public void deleteUser() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if(user != null){
             user.delete().addOnCompleteListener(task -> {
@@ -217,31 +226,5 @@ public class MainActivity extends AppCompatActivity {
         cur.close();
         sqlDB.close();
         return true;
-    }
-
-    private void SetDial(){
-        setDialog.show();
-
-        Button btnChange = (Button) setDialog.findViewById(R.id.btnChange);
-        Button btnOut = (Button) setDialog.findViewById(R.id.btnOut);
-
-        btnChange.setOnClickListener(v -> {
-            signOut();
-            setDialog.dismiss();
-            sqlDB = myDb.getWritableDatabase();
-            myDb.truncateTB(sqlDB);
-            sqlDB.close();
-            onRestart();
-        });
-
-        // 서버 측에도 삭제 요청 넣어야댐
-        btnOut.setOnClickListener(v -> {
-            DeleteUser();
-            setDialog.dismiss();
-            sqlDB = myDb.getWritableDatabase();
-            myDb.truncateTB(sqlDB);
-            sqlDB.close();
-            onRestart();
-        });
     }
 }

@@ -61,12 +61,7 @@ public class NoticeActivity extends AppCompatActivity {
         btnNoticeExit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                RecyclerNoticeList item = new RecyclerNoticeList();
-                item.setTitle("HI");
-                item.setBody("BYE");
-                item.setDate("HE");
-                mList.add(item);
-                mAdapter.notifyDataSetChanged();
+                finish();
             }
         });
 
@@ -104,7 +99,7 @@ public class NoticeActivity extends AppCompatActivity {
                     JSONArray arr = root.getJSONArray("Board");
 
 
-                    for(int i = 0; i < arr.length(); i++) {
+                    for(int i = arr.length() - 1; i >= 0; i--) {
                         JSONObject tmp = (JSONObject) arr.get(i);
 
                         Message msg = new Message();
