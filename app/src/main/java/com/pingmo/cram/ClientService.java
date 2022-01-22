@@ -36,7 +36,7 @@ public class ClientService extends Service {
 
     public Handler receiveHandler;
 
-    final String IP = "192.168.0.81";
+    final String IP = "121.132.133.85";
     final int PORT = 8856;
 
     IBinder mBinder = new MyBinder();

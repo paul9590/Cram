@@ -27,6 +27,7 @@
         <activity android:name=".RoomActivity"/>
         <activity android:name=".GameActivity" android:windowSoftInputMode="adjustPan"/>
         <activity android:name=".NoticeActivity"/>
+        <activity android:name=".NoticeInfoActivity"/>
 
         <service android:name=".ClientService"
             android:enabled="true"

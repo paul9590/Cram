@@ -1,15 +1,23 @@
 package com.pingmo.cram;
 
+import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -20,33 +28,65 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 
 public class NoticeActivity extends AppCompatActivity {
 
-    TextView tmp;
-    TextView tmp2;
     Handler noticeHandler;
-    final int TITLE = 1;
-    final int BODY = 2;
+    RecyclerView viewNotice = null;
+    RecyclerNoticeAdapter mAdapter = null;
+    ArrayList<RecyclerNoticeList> mList;
+    final int NOTICE = 1;
+
+    class Notice{
+        String title;
+        String body;
+        String date;
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notice);
-        tmp = findViewById(R.id.textView);
-        tmp2 = findViewById(R.id.textView2);
+
+        Button btnNoticeExit = findViewById(R.id.btnNoticeExit);
+        viewNotice = findViewById(R.id.viewNotice);
+
+        mList = new ArrayList<>();
+        mAdapter = new RecyclerNoticeAdapter(mList);
+        viewNotice.setAdapter(mAdapter);
+        viewNotice.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
+        viewNotice.addItemDecoration(new DividerItemDecoration(getApplicationContext(), 1));
+
+        btnNoticeExit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                RecyclerNoticeList item = new RecyclerNoticeList();
+                item.setTitle("HI");
+                item.setBody("BYE");
+                item.setDate("HE");
+                mList.add(item);
+                mAdapter.notifyDataSetChanged();
+            }
+        });
+
 
         noticeHandler = new Handler(new Handler.Callback() {
             @Override
             public boolean handleMessage(@NonNull Message msg) {
-                if(msg.what == TITLE) {
-                    tmp.setText(msg.obj.toString());
-                }else {
-                    tmp2.setText(msg.obj.toString());
+                if(msg.what == NOTICE) {
+                    RecyclerNoticeList item = new RecyclerNoticeList();
+                    Notice notice = (Notice) msg.obj;
+                    item.setTitle(notice.title);
+                    item.setBody(notice.body);
+                    item.setDate(notice.date);
+                    mList.add(item);
+                    mAdapter.notifyDataSetChanged();
                 }
                 return true;
             }
         });
+
         new Thread() {
             @Override
             public void run() {
@@ -67,15 +107,14 @@ public class NoticeActivity extends AppCompatActivity {
                     for(int i = 0; i < arr.length(); i++) {
                         JSONObject tmp = (JSONObject) arr.get(i);
 
-                        Message msgTitle = new Message();
-                        msgTitle.what = TITLE;
-                        msgTitle.obj = tmp.getString("title");
-                        noticeHandler.sendMessage(msgTitle);
-
-                        Message msgBody = new Message();
-                        msgBody.what = BODY;
-                        msgBody.obj = tmp.getString("body");
-                        noticeHandler.sendMessage(msgBody);
+                        Message msg = new Message();
+                        msg.what = NOTICE;
+                        Notice notice = new Notice();
+                        notice.title = tmp.getString("title");
+                        notice.body = tmp.getString("body");
+                        notice.date = tmp.getString("date");
+                        msg.obj = notice;
+                        noticeHandler.sendMessage(msg);
                     }
 
                 }catch (Exception e){

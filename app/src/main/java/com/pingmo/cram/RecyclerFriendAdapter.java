@@ -40,7 +40,8 @@ public class RecyclerFriendAdapter extends RecyclerView.Adapter<RecyclerFriendAd
                 friendDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 friendDialog.setContentView(R.layout.dial_shop);
                 friendDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                friendDial(vh.txtFriend.getText().toString());                }
+                friendDial(vh.txtFriend.getText().toString());
+            }
         });
 
         return vh;
