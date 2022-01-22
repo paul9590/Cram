@@ -1,4 +1,4 @@
-package com.pingmo.cram;
+package com.pingmo.cram.list;
 
 public class RecyclerRoomList {
     private Boolean imgLock;

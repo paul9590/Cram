@@ -1,4 +1,4 @@
-package com.pingmo.cram;
+package com.pingmo.cram.activity;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -13,6 +13,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.pingmo.cram.R;
+import com.pingmo.cram.adapter.RecyclerNoticeAdapter;
+import com.pingmo.cram.list.RecyclerNoticeList;
 
 import org.json.JSONArray;
 import org.json.JSONObject;

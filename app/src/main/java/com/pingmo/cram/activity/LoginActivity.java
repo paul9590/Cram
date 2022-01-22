@@ -1,4 +1,4 @@
-package com.pingmo.cram;
+package com.pingmo.cram.activity;
 
 
 import android.content.Intent;
@@ -28,6 +28,9 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.pingmo.cram.Cram;
+import com.pingmo.cram.MyDBHelper;
+import com.pingmo.cram.R;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

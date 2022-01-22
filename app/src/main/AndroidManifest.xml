@@ -13,7 +13,7 @@
         android:theme="@style/Theme.Cram"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".MainActivity"
+            android:name=".activity.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,13 +21,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".LoginActivity"/>
-        <activity android:name=".RegisterActivity"/>
-        <activity android:name=".ShopActivity"/>
-        <activity android:name=".RoomActivity"/>
-        <activity android:name=".GameActivity" android:windowSoftInputMode="adjustPan"/>
-        <activity android:name=".NoticeActivity"/>
-        <activity android:name=".NoticeInfoActivity"/>
+        <activity android:name=".activity.LoginActivity"/>
+        <activity android:name=".activity.RegisterActivity"/>
+        <activity android:name=".activity.ShopActivity"/>
+        <activity android:name=".activity.RoomActivity"/>
+        <activity android:name=".activity.GameActivity" android:windowSoftInputMode="adjustPan"/>
+        <activity android:name=".activity.NoticeActivity"/>
+        <activity android:name=".activity.NoticeInfoActivity"/>
 
         <service android:name=".ClientService"
             android:enabled="true"

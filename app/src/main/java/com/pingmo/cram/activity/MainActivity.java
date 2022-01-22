@@ -1,4 +1,4 @@
-package com.pingmo.cram;
+package com.pingmo.cram.activity;
 
 
 import android.content.Intent;
@@ -22,9 +22,14 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.pingmo.cram.Cram;
+import com.pingmo.cram.MyDBHelper;
+import com.pingmo.cram.fragment.ProfileFragment;
+import com.pingmo.cram.R;
+import com.pingmo.cram.fragment.SettingFragment;
 
 public class MainActivity extends AppCompatActivity {
-    
+
     private GoogleSignInClient mGoogleSignInClient;
     private FirebaseAuth mAuth;
     private final String TAG = "mainTag";
@@ -35,8 +40,8 @@ public class MainActivity extends AppCompatActivity {
     ProfileFragment profileFragment;
     SettingFragment settingFragment;
     
-    String userName = "로그인을 해주세요.";
-    String userInfo = "점수 : 0\n캐시 : 0";
+    public String userName = "로그인을 해주세요.";
+    public String userInfo = "점수 : 0\n캐시 : 0";
     
     Cram cram = Cram.getInstance();
 

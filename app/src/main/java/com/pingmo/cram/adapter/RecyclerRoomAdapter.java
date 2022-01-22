@@ -1,4 +1,4 @@
-package com.pingmo.cram;
+package com.pingmo.cram.adapter;
 
 import android.content.Context;
 import android.content.Intent;
@@ -13,6 +13,10 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.pingmo.cram.R;
+import com.pingmo.cram.list.RecyclerRoomList;
+import com.pingmo.cram.activity.GameActivity;
 
 import java.util.ArrayList;
 

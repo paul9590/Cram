@@ -1,4 +1,4 @@
-package com.pingmo.cram;
+package com.pingmo.cram.adapter;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -15,6 +15,9 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.pingmo.cram.R;
+import com.pingmo.cram.list.RecyclerShopList;
 
 import java.util.ArrayList;
 

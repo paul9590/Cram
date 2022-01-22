@@ -1,4 +1,4 @@
-package com.pingmo.cram;
+package com.pingmo.cram.fragment;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -12,6 +12,11 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.pingmo.cram.R;
+import com.pingmo.cram.adapter.RecyclerFriendAdapter;
+import com.pingmo.cram.list.RecyclerFriendList;
+import com.pingmo.cram.activity.MainActivity;
 
 import java.util.ArrayList;
 
@@ -109,6 +114,7 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 ((MainActivity)getActivity()).signOut();
+                drawLay.closeDrawers();
             }
         });
 

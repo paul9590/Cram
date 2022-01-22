@@ -1,4 +1,4 @@
-package com.pingmo.cram;
+package com.pingmo.cram.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,6 +7,8 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.pingmo.cram.R;
 
 public class NoticeInfoActivity extends AppCompatActivity {
 

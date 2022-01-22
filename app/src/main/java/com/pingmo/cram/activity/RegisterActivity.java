@@ -1,4 +1,4 @@
-package com.pingmo.cram;
+package com.pingmo.cram.activity;
 
 
 import android.content.Intent;
@@ -11,6 +11,10 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.pingmo.cram.Cram;
+import com.pingmo.cram.MyDBHelper;
+import com.pingmo.cram.R;
 
 public class RegisterActivity extends AppCompatActivity {
 

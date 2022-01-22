@@ -1,4 +1,4 @@
-package com.pingmo.cram;
+package com.pingmo.cram.fragment;
 
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -12,14 +12,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.pingmo.cram.R;
+import com.pingmo.cram.adapter.RecyclerShopAdapter;
+import com.pingmo.cram.list.RecyclerShopList;
+
 import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link Shop3Fragment#newInstance} factory method to
+ * Use the {@link Shop1Fragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class Shop3Fragment extends Fragment {
+public class Shop1Fragment extends Fragment {
 
     RecyclerView mRecyclerView = null;
     RecyclerShopAdapter mAdapter = null;
@@ -34,7 +38,7 @@ public class Shop3Fragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    public Shop3Fragment() {
+    public Shop1Fragment() {
         // Required empty public constructor
     }
 
@@ -44,11 +48,11 @@ public class Shop3Fragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment Shop3Fragment.
+     * @return A new instance of fragment Shop1Fragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static Shop3Fragment newInstance(String param1, String param2) {
-        Shop3Fragment fragment = new Shop3Fragment();
+    public static Shop1Fragment newInstance(String param1, String param2) {
+        Shop1Fragment fragment = new Shop1Fragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -69,25 +73,24 @@ public class Shop3Fragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.fragment_shop3, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_shop1, container, false);
 
         Drawable mImageDrawable [];
         String mMainText [];
 
-        mRecyclerView = rootView.findViewById(R.id.viewShop3);
+        mRecyclerView = rootView.findViewById(R.id.viewShop1);
 
         mList = new ArrayList<>();
         mAdapter = new RecyclerShopAdapter(mList);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false));
-
         mImageDrawable = new Drawable[4];
         mMainText = new String[4];
 
         // 이부분 건들여서 서버 측 소스 코드 받아 올 것
         for(int i = 0; i < 4; i++) {
             mImageDrawable[i] = ResourcesCompat.getDrawable(getResources(), R.drawable.help, null);
-            mMainText[i] = "핑모";
+            mMainText[i] = "paul";
         }
 
         addItem(mImageDrawable, mMainText);
@@ -106,6 +109,39 @@ public class Shop3Fragment extends Fragment {
         addItem(mImageDrawable, mMainText);
         addItem(mImageDrawable, mMainText);
         addItem(mImageDrawable, mMainText);
+        addItem(mImageDrawable, mMainText);
+        addItem(mImageDrawable, mMainText);
+        addItem(mImageDrawable, mMainText);
+        addItem(mImageDrawable, mMainText);
+        addItem(mImageDrawable, mMainText);
+        addItem(mImageDrawable, mMainText);
+        addItem(mImageDrawable, mMainText);
+        addItem(mImageDrawable, mMainText);
+        addItem(mImageDrawable, mMainText);
+        addItem(mImageDrawable, mMainText);
+        addItem(mImageDrawable, mMainText);
+        addItem(mImageDrawable, mMainText);
+        addItem(mImageDrawable, mMainText);
+        addItem(mImageDrawable, mMainText);
+        addItem(mImageDrawable, mMainText);
+        addItem(mImageDrawable, mMainText);
+        addItem(mImageDrawable, mMainText);
+        addItem(mImageDrawable, mMainText);
+        addItem(mImageDrawable, mMainText);
+        addItem(mImageDrawable, mMainText);
+        addItem(mImageDrawable, mMainText);
+        addItem(mImageDrawable, mMainText);
+        addItem(mImageDrawable, mMainText);
+        addItem(mImageDrawable, mMainText);
+        addItem(mImageDrawable, mMainText);
+        addItem(mImageDrawable, mMainText);
+        addItem(mImageDrawable, mMainText);
+        addItem(mImageDrawable, mMainText);
+        addItem(mImageDrawable, mMainText);
+        addItem(mImageDrawable, mMainText);
+        addItem(mImageDrawable, mMainText);
+        addItem(mImageDrawable, mMainText);
+
         mAdapter.notifyDataSetChanged();
 
         return rootView;

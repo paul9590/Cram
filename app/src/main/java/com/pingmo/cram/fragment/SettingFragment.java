@@ -1,4 +1,4 @@
-package com.pingmo.cram;
+package com.pingmo.cram.fragment;
 
 import android.app.Dialog;
 import android.content.Intent;
@@ -14,6 +14,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
+
+import com.pingmo.cram.R;
+import com.pingmo.cram.activity.MainActivity;
+import com.pingmo.cram.activity.NoticeActivity;
 
 /**
  * A simple {@link Fragment} subclass.

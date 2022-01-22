@@ -1,9 +1,9 @@
-package com.pingmo.cram;
+package com.pingmo.cram.list;
 
 public class RecyclerNoticeList {
-    String title;
-    String body;
-    String date;
+    public String title;
+    public String body;
+    public String date;
 
     public String getTitle() {
         return title;

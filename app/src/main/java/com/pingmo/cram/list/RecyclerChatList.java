@@ -1,4 +1,4 @@
-package com.pingmo.cram;
+package com.pingmo.cram.list;
 
 public class RecyclerChatList {
     private String name;

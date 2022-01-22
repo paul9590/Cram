@@ -1,4 +1,4 @@
-package com.pingmo.cram;
+package com.pingmo.cram.activity;
 
 import android.os.Bundle;
 import android.view.View;
@@ -13,6 +13,10 @@ import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
+import com.pingmo.cram.R;
+import com.pingmo.cram.fragment.Shop1Fragment;
+import com.pingmo.cram.fragment.Shop2Fragment;
+import com.pingmo.cram.fragment.Shop3Fragment;
 
 import java.util.ArrayList;
 

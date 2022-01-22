@@ -1,4 +1,4 @@
-package com.pingmo.cram;
+package com.pingmo.cram.fragment;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -12,6 +12,11 @@ import android.widget.EditText;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.pingmo.cram.Cram;
+import com.pingmo.cram.R;
+import com.pingmo.cram.adapter.RecyclerChatAdapter;
+import com.pingmo.cram.list.RecyclerChatList;
 
 import java.util.ArrayList;
 
