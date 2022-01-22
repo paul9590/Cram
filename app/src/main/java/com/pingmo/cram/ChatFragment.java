@@ -2,15 +2,12 @@ package com.pingmo.cram;
 
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -79,6 +76,7 @@ public class ChatFragment extends Fragment {
 
         EditText editChat = (EditText) rootView.findViewById(R.id.editChat);
         Button btnChatSend = (Button) rootView.findViewById(R.id.btnChatSend);
+        mRecyclerView = rootView.findViewById(R.id.viewChat);
 
         editChat.setOnKeyListener(new View.OnKeyListener() {
             @Override
@@ -103,13 +101,11 @@ public class ChatFragment extends Fragment {
             }
         });
 
-        mRecyclerView = rootView.findViewById(R.id.viewChat);
 
         mList = new ArrayList<>();
         mAdapter = new RecyclerChatAdapter(mList);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false));
-
 
         chatHandler = new Handler(msg -> {
             String name = msg.obj.toString();

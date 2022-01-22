@@ -8,7 +8,6 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
 import android.os.SystemClock;
-import android.util.Log;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -170,7 +169,6 @@ public class ClientService extends Service {
 
         @Override
         public void run() {
-
             byte[] buffer;
             while (flagRead){
                 buffer = new byte[1024];

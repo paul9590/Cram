@@ -1,7 +1,6 @@
 package com.pingmo.cram;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;

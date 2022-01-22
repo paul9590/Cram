@@ -12,8 +12,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.firebase.auth.FirebaseUser;
-
 public class RegisterActivity extends AppCompatActivity {
 
     private MyDBHelper myDb;
