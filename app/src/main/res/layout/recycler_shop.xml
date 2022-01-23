@@ -5,87 +5,89 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <TableLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+    <ImageView
+        android:id="@+id/imgShop1"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:scaleType="center"
+        android:background="@drawable/layoutshape"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/txtShopMain1"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center">
-
-            <ImageView
-                android:id="@+id/imgShop1"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:scaleType="center"
-                android:background="@drawable/layoutshape"/>
+        app:layout_constraintRight_toLeftOf="@id/imgShop2"/>
 
 
-            <ImageView
-                android:id="@+id/imgShop2"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:layout_marginLeft="10dp"
-                android:scaleType="center"
-                android:background="@drawable/layoutshape"/>
+    <ImageView
+        android:id="@+id/imgShop2"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:scaleType="center"
+        android:background="@drawable/layoutshape"
+        app:layout_constraintTop_toTopOf="@id/imgShop1"
+        app:layout_constraintLeft_toRightOf="@id/imgShop1"
+        app:layout_constraintBottom_toBottomOf="@id/imgShop1"
+        app:layout_constraintRight_toLeftOf="@id/imgShop3"/>
 
-            <ImageView
-                android:id="@+id/imgShop3"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:layout_marginLeft="10dp"
-                android:scaleType="center"
-                android:background="@drawable/layoutshape"/>
+    <ImageView
+        android:id="@+id/imgShop3"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:scaleType="center"
+        android:background="@drawable/layoutshape"
+        app:layout_constraintTop_toTopOf="@id/imgShop2"
+        app:layout_constraintLeft_toRightOf="@id/imgShop2"
+        app:layout_constraintBottom_toBottomOf="@id/imgShop2"
+        app:layout_constraintRight_toLeftOf="@id/imgShop4"/>
 
-            <ImageView
-                android:id="@+id/imgShop4"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:layout_marginLeft="10dp"
-                android:scaleType="center"
-                android:background="@drawable/layoutshape"/>
+    <ImageView
+        android:id="@+id/imgShop4"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:scaleType="center"
+        android:background="@drawable/layoutshape"
+        app:layout_constraintTop_toTopOf="@id/imgShop3"
+        app:layout_constraintLeft_toRightOf="@id/imgShop3"
+        app:layout_constraintBottom_toBottomOf="@id/imgShop3"
+        app:layout_constraintRight_toRightOf="parent"/>
 
-        </TableRow>
+    <TextView
+        android:id="@+id/txtShopMain1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="10sp"
+        app:layout_constraintTop_toBottomOf="@id/imgShop1"
+        app:layout_constraintLeft_toLeftOf="@id/imgShop1"
+        app:layout_constraintRight_toRightOf="@id/imgShop1"/>
 
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center">
+    <TextView
+        android:id="@+id/txtShopMain2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="10sp"
+        app:layout_constraintTop_toBottomOf="@id/imgShop2"
+        app:layout_constraintLeft_toLeftOf="@id/imgShop2"
+        app:layout_constraintRight_toRightOf="@id/imgShop2"/>
 
-            <TextView
-                android:id="@+id/txtShopMain1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:textSize="10sp"/>
+    <TextView
+        android:id="@+id/txtShopMain3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="10sp"
+        app:layout_constraintTop_toBottomOf="@id/imgShop3"
+        app:layout_constraintLeft_toLeftOf="@id/imgShop3"
+        app:layout_constraintRight_toRightOf="@id/imgShop3"/>
 
-            <TextView
-                android:id="@+id/txtShopMain2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:textSize="10sp"/>
-
-            <TextView
-                android:id="@+id/txtShopMain3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:textSize="10sp"/>
-
-            <TextView
-                android:id="@+id/txtShopMain4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:textSize="10sp"/>
-
-        </TableRow>
-
-    </TableLayout>
+    <TextView
+        android:id="@+id/txtShopMain4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="10sp"
+        app:layout_constraintTop_toBottomOf="@id/imgShop4"
+        app:layout_constraintLeft_toLeftOf="@id/imgShop4"
+        app:layout_constraintRight_toRightOf="@id/imgShop4"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

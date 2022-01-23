@@ -118,6 +118,7 @@ public class ClientService extends Service {
                         if (rt != null) {
                             flagRead = false;
                         }
+
                         if (wt != null) {
                             writeHandler.getLooper().quit();
                         }
@@ -129,11 +130,11 @@ public class ClientService extends Service {
                         isConnected = true;
 
                     }else {
-                        SystemClock.sleep(10000);
+                        SystemClock.sleep(1000);
                     }
                 }catch (Exception e){
                     e.printStackTrace();
-                    SystemClock.sleep(10000);
+                    SystemClock.sleep(1000);
                 }
             }
 

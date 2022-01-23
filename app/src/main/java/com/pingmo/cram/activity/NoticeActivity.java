@@ -117,4 +117,10 @@ public class NoticeActivity extends AppCompatActivity {
         }.start();
 
     }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        overridePendingTransition(0,0);
+    }
 }

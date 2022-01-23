@@ -44,6 +44,11 @@ public class ShopActivity extends AppCompatActivity {
         tabLayout.setupWithViewPager(pager);
 
     }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        overridePendingTransition(0,0);
+    }
 
     public static class ViewpagerAdapter extends FragmentPagerAdapter {
 

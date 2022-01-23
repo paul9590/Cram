@@ -89,6 +89,12 @@ public class RoomActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        overridePendingTransition(0,0);
+    }
+
     private void addItem(Boolean isLock, String roomName, String roomInfo) {
         RecyclerRoomList item = new RecyclerRoomList();
         item.setImgLock(isLock);

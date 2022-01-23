@@ -7,6 +7,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
@@ -78,7 +79,6 @@ public class SettingFragment extends Fragment {
         Button btnAsk = rootView.findViewById(R.id.btnAsk);
         Button btnQuit = rootView.findViewById(R.id.btnQuit);
 
-
         btnNotice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -119,6 +119,9 @@ public class SettingFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 ((MainActivity)getActivity()).deleteUser();
+                DrawerLayout drawLay = getActivity().findViewById(R.id.drawLay);
+                dialogQuit.dismiss();
+                drawLay.closeDrawers();
             }
         });
 

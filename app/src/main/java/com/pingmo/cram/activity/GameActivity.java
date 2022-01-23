@@ -1,21 +1,36 @@
 package com.pingmo.cram.activity;
 
+import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.Adapter;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
+import com.pingmo.cram.adapter.RecyclerNoticeAdapter;
 import com.pingmo.cram.fragment.ChatFragment;
 import com.pingmo.cram.fragment.DeckFragment;
 import com.pingmo.cram.R;
@@ -23,8 +38,7 @@ import com.pingmo.cram.R;
 import java.util.ArrayList;
 
 public class GameActivity extends AppCompatActivity {
-
-
+    Dialog gamePlayerDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,8 +66,16 @@ public class GameActivity extends AppCompatActivity {
             imgPlayer[i].setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(getApplicationContext(), "" + v.getX(), Toast.LENGTH_SHORT).show();
-                    v.getY();
+                    Toast.makeText(getApplicationContext(), "" + v.getX() + " " + v.getY(), Toast.LENGTH_SHORT).show();
+                    gamePlayerDialog = new Dialog(GameActivity.this);
+                    gamePlayerDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                    gamePlayerDialog.setContentView(R.layout.dial_gameplayer);
+                    Window window = gamePlayerDialog.getWindow();
+                    WindowManager.LayoutParams params = window.getAttributes();
+                    params.x = (int) v.getX();
+                    params.y = (int) v.getY();
+                    window.setAttributes(params);
+                    gamePlayerDial();
                 }
             });
         }
@@ -65,6 +87,12 @@ public class GameActivity extends AppCompatActivity {
 
         tabLayout.setupWithViewPager(pager);
 
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        overridePendingTransition(0,0);
     }
 
     public static class ViewpagerAdapter extends FragmentPagerAdapter {
@@ -98,5 +126,16 @@ public class GameActivity extends AppCompatActivity {
             return arrayList.size();
         }
 
+    }
+    public void gamePlayerDial(){
+        gamePlayerDialog.show();
+        ListView listGamePlayer = gamePlayerDialog.findViewById(R.id.listGamePlayer);
+
+        ArrayList<String> list = new ArrayList<>();
+        list.add("호에에");
+        list.add("호에에");
+        list.add("호에에");
+        ArrayAdapter<String> mAdapter = new ArrayAdapter<>(this, R.layout.listlayout, list);
+        listGamePlayer.setAdapter(mAdapter);
     }
 }
