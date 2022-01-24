@@ -41,7 +41,7 @@ public class RecyclerFriendAdapter extends RecyclerView.Adapter<RecyclerFriendAd
             public void onClick(View v) {
                 friendDialog = new Dialog(context);
                 friendDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                friendDialog.setContentView(R.layout.dial_shop);
+                friendDialog.setContentView(R.layout.dial_friend);
                 friendDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 friendDial(vh.txtFriend.getText().toString());
             }

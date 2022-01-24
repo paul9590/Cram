@@ -65,12 +65,12 @@ public class DeckFragment extends Fragment {
         View rootView =  inflater.inflate(R.layout.fragment_deck, container, false);
 
         ImageView [] imgDeck = {
-                (ImageView) rootView.findViewById(R.id.imgDeck1),
-                (ImageView) rootView.findViewById(R.id.imgDeck2),
-                (ImageView) rootView.findViewById(R.id.imgDeck3),
-                (ImageView) rootView.findViewById(R.id.imgDeck4),
-                (ImageView) rootView.findViewById(R.id.imgDeck5),
-                (ImageView) rootView.findViewById(R.id.imgDeck6),
+                rootView.findViewById(R.id.imgDeck1),
+                rootView.findViewById(R.id.imgDeck2),
+                rootView.findViewById(R.id.imgDeck3),
+                rootView.findViewById(R.id.imgDeck4),
+                rootView.findViewById(R.id.imgDeck5),
+                rootView.findViewById(R.id.imgDeck6),
         };
         for(int i = 0; i < imgDeck.length; i++) {
             imgDeck[i].setOnClickListener(new View.OnClickListener() {

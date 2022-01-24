@@ -1,12 +1,9 @@
 package com.pingmo.cram.fragment;
 
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
-import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
@@ -81,7 +78,7 @@ public class ShopFragment extends Fragment {
         mList = new ArrayList<>();
         mAdapter = new RecyclerShopAdapter(mList);
         mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
+        mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 4));
         Bundle bundle = this.getArguments();
         if(bundle != null){
             addItem(bundle.getStringArray("shopMain"), bundle.getIntArray("shopRes"));

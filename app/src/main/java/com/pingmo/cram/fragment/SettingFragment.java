@@ -77,7 +77,7 @@ public class SettingFragment extends Fragment {
 
         Button btnNotice = rootView.findViewById(R.id.btnNotice);
         Button btnAsk = rootView.findViewById(R.id.btnAsk);
-        Button btnQuit = rootView.findViewById(R.id.btnQuit);
+        Button btnQuit = rootView.findViewById(R.id.btnQuitDialYes);
 
         btnNotice.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -112,8 +112,8 @@ public class SettingFragment extends Fragment {
     public void dialQuit(){
         dialogQuit.show();
 
-        Button btnQuit = dialogQuit.findViewById(R.id.btnQuit);
-        Button btnQuitExit = dialogQuit.findViewById(R.id.btnQuitExit);
+        Button btnQuit = dialogQuit.findViewById(R.id.btnQuitDialYes);
+        Button btnQuitExit = dialogQuit.findViewById(R.id.btnQuitDialNo);
 
         btnQuit.setOnClickListener(new View.OnClickListener() {
             @Override

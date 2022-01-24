@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private final String TAG = "mainTag";
 
     public MyDBHelper myDb;
-    public SQLiteDatabase sqlDB;
+    public SQLiteDatabase sqlDb;
 
     ProfileFragment profileFragment;
     SettingFragment settingFragment;
@@ -134,8 +134,8 @@ public class MainActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
 
-        sqlDB = myDb.getReadableDatabase();
-        Cursor cur = sqlDB.rawQuery("SELECT * FROM userTB", null);
+        sqlDb = myDb.getReadableDatabase();
+        Cursor cur = sqlDb.rawQuery("SELECT * FROM userTB", null);
         if(cur.getCount() > 0){
             cur.moveToFirst();
             int n = cur.getColumnIndex("userName");
@@ -148,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
             userInfo = sb.toString();
         }
         cur.close();
-        sqlDB.close();
+        sqlDb.close();
     }
 
     @Override
@@ -161,10 +161,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onRestart() {
         super.onRestart();
         cram.setHandler(mainHandler);
-        sqlDB = myDb.getReadableDatabase();
+        sqlDb = myDb.getReadableDatabase();
         userName = "로그인을 해주세요.";
         userInfo = "점수 : 0\n캐시 : 0";
-        Cursor cur = sqlDB.rawQuery("SELECT * FROM userTB", null);
+        Cursor cur = sqlDb.rawQuery("SELECT * FROM userTB", null);
         if(cur.getCount() > 0){
             cur.moveToFirst();
             int n = cur.getColumnIndex("userName");
@@ -177,7 +177,7 @@ public class MainActivity extends AppCompatActivity {
             userInfo = sb.toString();
         }
         cur.close();
-        sqlDB.close();
+        sqlDb.close();
         profileFragment = new ProfileFragment();
     }
 
@@ -187,9 +187,9 @@ public class MainActivity extends AppCompatActivity {
         mGoogleSignInClient.signOut().addOnCompleteListener(this,
                 task -> Toast.makeText(getApplicationContext(), "로그 아웃 되었습니다.", Toast.LENGTH_LONG).show());
 
-        sqlDB = myDb.getWritableDatabase();
-        myDb.truncateTB(sqlDB);
-        sqlDB.close();
+        sqlDb = myDb.getWritableDatabase();
+        myDb.truncateTB(sqlDb);
+        sqlDb.close();
         onRestart();
     }
 
@@ -216,16 +216,16 @@ public class MainActivity extends AppCompatActivity {
     // 초기 로그인 정보 확인
     private boolean checkLogin(){
         myDb = new MyDBHelper(this);
-        sqlDB = myDb.getReadableDatabase();
-        Cursor cur = sqlDB.rawQuery("SELECT * FROM userTB", null);
+        sqlDb = myDb.getReadableDatabase();
+        Cursor cur = sqlDb.rawQuery("SELECT * FROM userTB", null);
 
         if(cur.getCount() == 0){
             cur.close();
-            sqlDB.close();
+            sqlDb.close();
             return false;
         }
         cur.close();
-        sqlDB.close();
+        sqlDb.close();
         return true;
     }
 }

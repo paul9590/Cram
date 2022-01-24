@@ -22,6 +22,14 @@
             app:layout_constraintHeight_percent="0.9"
             app:layout_constraintWidth_percent="0.8">
 
+            <ImageButton
+                android:id="@+id/imbSetting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/imbsetting"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:background="#00000000"/>
 
             <ImageView
                 android:id="@+id/imgUser"
@@ -69,15 +77,6 @@
                 app:layout_constraintTop_toBottomOf="@id/btnRoom"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"/>
-
-            <ImageButton
-                android:id="@+id/imbSetting"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/imbsetting"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:background="#00000000"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

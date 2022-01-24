@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/layoutshape">
+
+    <TextView
+        android:id="@+id/txtRoomDial"
+        android:text="방 만들기"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/editRoomName"/>
+
+    <EditText
+        android:id="@+id/editRoomName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:hint="방 제목을 입력해 주세요."
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/txtRoomDial"
+        app:layout_constraintBottom_toTopOf="@id/guideRoomDial"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideRoomDial"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.3"/>
+
+    <TextView
+        android:id="@+id/txtRoomDial2"
+        android:text="입장 가능 인원"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tbRoomDial"
+        app:layout_constraintBottom_toBottomOf="@id/tbRoomDial"
+        app:layout_constraintHorizontal_bias="0.1"/>
+
+    <TableRow
+        android:id="@+id/tbRoomDial"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toRightOf="@id/txtRoomDial2"
+        app:layout_constraintTop_toBottomOf="@id/guideRoomDial"
+        app:layout_constraintBottom_toTopOf="@id/chkRoomLock"
+        app:layout_constraintHorizontal_bias="0.8"
+        app:layout_constraintRight_toRightOf="parent">
+
+        <ImageButton
+            android:id="@+id/imbRoomCntDown"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/imbup"
+            android:background="#00000000"/>
+
+        <TextView
+            android:id="@+id/txtRoomMax"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="4"
+            android:layout_margin="10dp"
+            android:layout_gravity="center"/>
+
+        <ImageButton
+            android:id="@+id/imbRoomCntUp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/imbdown"
+            android:background="#00000000"/>
+    </TableRow>
+
+    <CheckBox
+        android:id="@+id/chkRoomLock"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/txtRoomDial2"
+        app:layout_constraintBottom_toTopOf="@id/guideRoomDial2"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintHorizontal_bias="0.1"/>
+
+    <TextView
+        android:id="@+id/txtRoomDial3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="비밀번호 설정"
+        app:layout_constraintTop_toTopOf="@id/chkRoomLock"
+        app:layout_constraintBottom_toBottomOf="@id/chkRoomLock"
+        app:layout_constraintLeft_toRightOf="@id/chkRoomLock"/>
+
+    <EditText
+        android:id="@+id/editRoomPw"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:ems="6"
+        app:layout_constraintTop_toTopOf="@id/txtRoomDial3"
+        app:layout_constraintBottom_toBottomOf="@id/txtRoomDial3"
+        app:layout_constraintLeft_toRightOf="@id/txtRoomDial3"
+        app:layout_constraintRight_toRightOf="parent"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideRoomDial2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.7"/>
+
+    <Button
+        android:id="@+id/btnRoomDialYes"
+        android:text="생성 하기"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/guideRoomDial2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/btnRoomDialNo"/>
+
+    <Button
+        android:id="@+id/btnRoomDialNo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="뒤로 가기"
+        app:layout_constraintTop_toTopOf="@id/btnRoomDialYes"
+        app:layout_constraintBottom_toBottomOf="@id/btnRoomDialYes"
+        app:layout_constraintLeft_toRightOf="@id/btnRoomDialYes"
+        app:layout_constraintRight_toRightOf="parent"/>
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

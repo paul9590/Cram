@@ -4,7 +4,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,8 +16,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.pingmo.cram.R;
-import com.pingmo.cram.activity.ShopActivity;
-import com.pingmo.cram.list.RecyclerNoticeList;
 import com.pingmo.cram.list.RecyclerShopList;
 
 import java.util.ArrayList;

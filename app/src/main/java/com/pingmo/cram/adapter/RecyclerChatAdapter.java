@@ -10,14 +10,13 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.pingmo.cram.R;
-import com.pingmo.cram.list.RecyclerChatList;
 
 import java.util.ArrayList;
 
 public class RecyclerChatAdapter extends RecyclerView.Adapter<RecyclerChatAdapter.ChatViewHolder> {
-    private ArrayList<RecyclerChatList> mData;
+    private ArrayList<String> mData;
 
-    public RecyclerChatAdapter(ArrayList<RecyclerChatList> data) {
+    public RecyclerChatAdapter(ArrayList<String> data) {
         mData = data;
     }
 
@@ -34,8 +33,7 @@ public class RecyclerChatAdapter extends RecyclerView.Adapter<RecyclerChatAdapte
 
     @Override
     public void onBindViewHolder(@NonNull ChatViewHolder holder, int position) {
-        RecyclerChatList item = mData.get(position);
-        String txt = item.getName() + " : " + item.getChat();
+        String txt = mData.get(position);
         holder.txtChat.setText(txt);
     }
 

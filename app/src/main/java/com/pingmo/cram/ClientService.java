@@ -8,6 +8,7 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
 import android.os.SystemClock;
+import android.util.Log;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -21,7 +22,6 @@ public class ClientService extends Service {
 
     boolean flagConnection = true;
     boolean isConnected = false;
-    boolean flagRead = true;
 
     public Handler writeHandler;
 
@@ -35,7 +35,7 @@ public class ClientService extends Service {
 
     public Handler receiveHandler;
 
-    final String IP = "192.168.0.85";
+    final String IP = "192.168.0.81";
     final int PORT = 8856;
 
     IBinder mBinder = new MyBinder();
@@ -78,7 +78,6 @@ public class ClientService extends Service {
         isConnected = false;
 
         if (socket != null) {
-            flagRead = false;
             writeHandler.getLooper().quit();
             try {
                 bout.close();
@@ -110,31 +109,29 @@ public class ClientService extends Service {
             while (flagConnection){
                 try {
                     if(!isConnected) {
-                        socket = new Socket();
-                        SocketAddress remoteAddr = new InetSocketAddress(IP, PORT);
-                        socket.connect(remoteAddr, 10000);
-                        bout = new BufferedOutputStream(socket.getOutputStream());
-                        bin = new BufferedInputStream(socket.getInputStream());
-                        if (rt != null) {
-                            flagRead = false;
-                        }
-
                         if (wt != null) {
                             writeHandler.getLooper().quit();
                         }
+
+                        socket = new Socket();
+                        SocketAddress remoteAddr = new InetSocketAddress(IP, PORT);
+                        socket.connect(remoteAddr, 10000);
+
+                        bout = new BufferedOutputStream(socket.getOutputStream());
+                        bin = new BufferedInputStream(socket.getInputStream());
+
                         wt = new WriteThread();
                         wt.start();
 
+                        isConnected = true;
                         rt = new ReadThread();
                         rt.start();
-                        isConnected = true;
-
                     }else {
-                        SystemClock.sleep(1000);
+                        SystemClock.sleep(10000);
                     }
                 }catch (Exception e){
                     e.printStackTrace();
-                    SystemClock.sleep(1000);
+                    SystemClock.sleep(10000);
                 }
             }
 
@@ -154,11 +151,6 @@ public class ClientService extends Service {
                     e.printStackTrace();
                     isConnected = false;
                     writeHandler.getLooper().quit();
-                    try{
-                        flagRead = false;
-                    }catch (Exception e1){
-                        e1.printStackTrace();
-                    }
                 }
                 return true;
             });
@@ -171,7 +163,7 @@ public class ClientService extends Service {
         @Override
         public void run() {
             byte[] buffer;
-            while (flagRead){
+            while (isConnected){
                 buffer = new byte[1024];
                 try {
                     String message;
@@ -180,16 +172,25 @@ public class ClientService extends Service {
                         message = new String(buffer, 0, size, StandardCharsets.UTF_8);
                         if(!message.equals("")){
                             Message msg = new Message();
+                            Log.e("이딴게", message);
+                            /* 구분자
+                            String receive [] = message.split("&");
+                            msg.what = Integer.parseInt(receive[0]);
+
+                            StringBuilder sb = new StringBuilder();
+                            for(int i = 1; i < receive.length; i++) {
+                                sb.append(receive[i]);
+                            }
+                            msg.obj = sb.toString();
+                            */
                             msg.obj = message;
                             receiveHandler.sendMessage(msg);
                         }
                     }else {
-                        flagRead = false;
                         isConnected = false;
                     }
                 }catch (Exception e){
                     e.printStackTrace();
-                    flagRead = false;
                     isConnected = false;
                 }
             }

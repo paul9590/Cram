@@ -15,8 +15,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.pingmo.cram.Cram;
 import com.pingmo.cram.R;
+import com.pingmo.cram.activity.GameActivity;
 import com.pingmo.cram.adapter.RecyclerChatAdapter;
-import com.pingmo.cram.list.RecyclerChatList;
 
 import java.util.ArrayList;
 
@@ -29,7 +29,7 @@ public class ChatFragment extends Fragment {
 
     RecyclerView mRecyclerView = null;
     RecyclerChatAdapter mAdapter = null;
-    ArrayList<RecyclerChatList> mList;
+    ArrayList<String> mList;
     Handler chatHandler;
     Cram cram = Cram.getInstance();
 
@@ -79,17 +79,17 @@ public class ChatFragment extends Fragment {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_chat, container, false);
 
-        /*
-        EditText editChat = (EditText) rootView.findViewById(R.id.editChat);
+        EditText editChat = rootView.findViewById(R.id.editChat);
         Button btnChatSend = (Button) rootView.findViewById(R.id.btnChatSend);
         mRecyclerView = rootView.findViewById(R.id.viewChat);
+        String format = "c&" + ((GameActivity)getActivity()).userName + " : ";
 
         editChat.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if(keyCode == event.KEYCODE_ENTER){
                     if (!editChat.getText().toString().trim().equals("")) {
-                        String s = editChat.getText().toString();
+                        String s = format + editChat.getText().toString();
                         cram.send(s);
                     }
                     return true;
@@ -101,23 +101,21 @@ public class ChatFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if (!editChat.getText().toString().trim().equals("")) {
-                    String s = editChat.getText().toString();
+                    String s = format + editChat.getText().toString();
                     cram.send(s);
                 }
             }
         });
-
 
         mList = new ArrayList<>();
         mAdapter = new RecyclerChatAdapter(mList);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false));
 
-         */
         chatHandler = new Handler(msg -> {
-            String name = msg.obj.toString();
             String chat = msg.obj.toString();
-            addItem(name, chat);
+            mList.add(chat);
+            mAdapter.notifyDataSetChanged();
             return true;
         });
 
@@ -128,13 +126,5 @@ public class ChatFragment extends Fragment {
     public void onStart() {
         super.onStart();
         cram.setHandler(chatHandler);
-    }
-
-    public void addItem(String name, String chat) {
-        RecyclerChatList item = new RecyclerChatList();
-        item.setName(name);
-        item.setChat(chat);
-        mList.add(item);
-        mAdapter.notifyDataSetChanged();
     }
 }
