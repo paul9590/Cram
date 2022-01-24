@@ -4,11 +4,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".fragment.Shop1Fragment">
+    tools:context=".fragment.ShopFragment">
 
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/viewShop1"
+            android:id="@+id/viewShop"
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintLeft_toLeftOf="parent"
