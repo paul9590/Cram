@@ -76,7 +76,7 @@ public class RegisterActivity extends AppCompatActivity {
             if(true) {
                 myDb = new MyDBHelper(getApplicationContext());
                 sqlDB = myDb.getWritableDatabase();
-                sqlDB.execSQL("INSERT INTO userTB (userName) VALUES ('" + userName + "');");
+                sqlDB.execSQL("INSERT INTO userTB (userName, userID) VALUES ('" + userName + "', '" + UID + "');");
                 sqlDB.close();
                 finish();
             }else{

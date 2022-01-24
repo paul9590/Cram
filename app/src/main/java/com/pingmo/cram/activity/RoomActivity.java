@@ -280,7 +280,7 @@ public class RoomActivity extends AppCompatActivity {
                 if(confirm) {
                     try {
                         JSONObject sendData = new JSONObject();
-                        sendData.put("what", 400);
+                        sendData.put("what", "400");
                         sendData.put("roomName", roomName);
                         sendData.put("maxPlayer", txtRoomMax.getText().toString());
                         if(chkRoomLock.isChecked()) {

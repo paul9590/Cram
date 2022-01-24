@@ -76,7 +76,6 @@ public class DeckFragment extends Fragment {
             imgDeck[i].setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(getActivity(), "?", Toast.LENGTH_SHORT).show();
                 }
             });
         }
