@@ -160,7 +160,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onRestart() {
         super.onRestart();
-        cram.setHandler(mainHandler);
+        if(cram != null) {
+            cram.setHandler(mainHandler);
+        }
         sqlDb = myDb.getReadableDatabase();
         userName = "로그인을 해주세요.";
         userInfo = "점수 : 0\n캐시 : 0";

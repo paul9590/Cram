@@ -7,6 +7,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -45,13 +47,20 @@ public class GameActivity extends AppCompatActivity {
     public MyDBHelper myDb;
     public SQLiteDatabase sqlDb;
     public String userName;
+
     boolean onGaming = false;
     boolean isHost = true;
+
     Dialog gamePlayerDialog;
     String playerName [];
     ImageView imgPlayer [];
     TextView txtPlayer [];
+
     int playerImg [];
+
+    Thread rollThread;
+    boolean isRolling = true;
+    Handler rollHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,10 +130,10 @@ public class GameActivity extends AppCompatActivity {
                         gamePlayerDialog = new Dialog(GameActivity.this);
                         gamePlayerDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                         gamePlayerDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                        if(playerName[num].equals("")){
+                        if(playerName[num].equals("") && isHost){
                             gamePlayerDialog.setContentView(R.layout.dial_player2);
                             gamePlayerDial2(num);
-                        }else {
+                        }else if(playerName[num].length() > 0){
                             gamePlayerDialog.setContentView(R.layout.dial_player);
                             gamePlayerDial(num);
                         }
@@ -132,6 +141,53 @@ public class GameActivity extends AppCompatActivity {
                 }
             });
         }
+
+        rollThread = new Thread(){
+            @Override
+            public void run() {
+                super.run();
+                while(isRolling) {
+                    try {
+                        for(int i = 0; i < playerName.length; i++) {
+                            Message msg = new Message();
+                            msg.obj = i;
+                            rollHandler.sendMessage(msg);
+                            Thread.sleep(200);
+                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+        rollThread.start();
+
+        rollHandler = new Handler(new Handler.Callback() {
+
+            int cnt = 0;
+            int max = playerName.length * 2;
+            int loser = 0;
+            int fin = max + loser;
+
+            @Override
+            public boolean handleMessage(@NonNull Message msg) {
+                int n = (int) msg.obj;
+                cnt++;
+                if(cnt > fin){
+                    isRolling = false;
+                    for (int i = 0; i < playerName.length; i++) {
+                        imgPlayer[i].setBackgroundColor(Color.WHITE);
+                    }
+                    imgPlayer[loser].setBackgroundColor(Color.RED);
+                }else {
+                    for (int i = 0; i < playerName.length; i++) {
+                        imgPlayer[i].setBackgroundColor(Color.WHITE);
+                    }
+                    imgPlayer[n].setBackgroundColor(Color.RED);
+                }
+                return true;
+            }
+        });
 
         txtGameTitle.setText(roomName);
 
@@ -241,7 +297,7 @@ public class GameActivity extends AppCompatActivity {
                 // 서버 봇 추가
                 imgPlayer[num].setImageResource(R.drawable.ic_launcher_background);
                 imgPlayer[num].setTag("Bot");
-                txtPlayer[num].setText("Bot");
+                txtPlayer[num].setText("Bot" + (num + 1));
                 gamePlayerDialog.dismiss();
 
             }

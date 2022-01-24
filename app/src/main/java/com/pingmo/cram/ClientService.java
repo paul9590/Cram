@@ -10,6 +10,8 @@ import android.os.Message;
 import android.os.SystemClock;
 import android.util.Log;
 
+import org.json.JSONObject;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
@@ -172,18 +174,10 @@ public class ClientService extends Service {
                         message = new String(buffer, 0, size, StandardCharsets.UTF_8);
                         if(!message.equals("")){
                             Message msg = new Message();
-                            Log.e("이딴게", message);
-                            /* 구분자
-                            String receive [] = message.split("&");
-                            msg.what = Integer.parseInt(receive[0]);
-
-                            StringBuilder sb = new StringBuilder();
-                            for(int i = 1; i < receive.length; i++) {
-                                sb.append(receive[i]);
-                            }
-                            msg.obj = sb.toString();
-                            */
-                            msg.obj = message;
+                            Log.e("에러인가요", "" + message);
+                            JSONObject receiveData = new JSONObject(message);
+                            msg.what = Integer.parseInt(receiveData.getString("what"));
+                            msg.obj = receiveData.toString();
                             receiveHandler.sendMessage(msg);
                         }
                     }else {

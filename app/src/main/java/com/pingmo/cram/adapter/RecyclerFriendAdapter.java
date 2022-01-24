@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -23,6 +25,7 @@ import java.util.ArrayList;
 public class RecyclerFriendAdapter extends RecyclerView.Adapter<RecyclerFriendAdapter.FriendViewHolder> {
     private ArrayList<RecyclerFriendList> mData;
     private Dialog friendDialog;
+    Context context;
 
     public RecyclerFriendAdapter(ArrayList<RecyclerFriendList> data) {
         mData = data;
@@ -31,22 +34,10 @@ public class RecyclerFriendAdapter extends RecyclerView.Adapter<RecyclerFriendAd
     @NonNull
     @Override
     public FriendViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        Context context = parent.getContext();
+        context = parent.getContext();
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.recycler_friend, parent, false);
         FriendViewHolder vh = new FriendViewHolder(view);
-
-        vh.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                friendDialog = new Dialog(context);
-                friendDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                friendDialog.setContentView(R.layout.dial_friend);
-                friendDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                friendDial(vh.txtFriend.getText().toString());
-            }
-        });
-
         return vh;
     }
 
@@ -75,6 +66,16 @@ public class RecyclerFriendAdapter extends RecyclerView.Adapter<RecyclerFriendAd
             super(itemView);
             imgOnline = itemView.findViewById(R.id.imgOnline);
             txtFriend = itemView.findViewById(R.id.txtFriend);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    friendDialog = new Dialog(context);
+                    friendDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                    friendDialog.setContentView(R.layout.dial_friend);
+                    friendDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                    friendDial(txtFriend.getText().toString());
+                }
+            });
         }
     }
 

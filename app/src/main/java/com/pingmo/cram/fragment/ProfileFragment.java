@@ -96,6 +96,17 @@ public class ProfileFragment extends Fragment {
         DrawerLayout drawLay = getActivity().findViewById(R.id.drawLay);
 
         mList = new ArrayList<>();
+
+        Boolean isOnline;
+        String name;
+
+        // 이부분 건들여서 서버 측 소스 코드 받아 올 것
+        for(int i = 0; i < 100; i++) {
+            isOnline = true;
+            name = "paul";
+            addItem(isOnline, name);
+        }
+
         mAdapter = new RecyclerFriendAdapter(mList);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false));
@@ -117,16 +128,6 @@ public class ProfileFragment extends Fragment {
                 drawLay.closeDrawers();
             }
         });
-
-        Boolean isOnline;
-        String name;
-
-        // 이부분 건들여서 서버 측 소스 코드 받아 올 것
-        for(int i = 0; i < 100; i++) {
-            isOnline = true;
-            name = "paul";
-            addItem(isOnline, name);
-        }
 
         return rootView;
     }

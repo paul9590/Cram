@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -29,6 +30,7 @@ import com.pingmo.cram.R;
 import com.pingmo.cram.adapter.RecyclerRoomAdapter;
 import com.pingmo.cram.list.RecyclerRoomList;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -54,6 +56,7 @@ public class RoomActivity extends AppCompatActivity {
 
     String [] filter;
     String roomName;
+    JSONObject requestRoom;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +70,12 @@ public class RoomActivity extends AppCompatActivity {
 
         filter = getResources().getStringArray(R.array.filter);
 
+        requestRoom = new JSONObject();
+        try {
+            requestRoom.put("what", "403");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         btnAddRoom.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -112,17 +121,21 @@ public class RoomActivity extends AppCompatActivity {
 
         // 방 목록 불러 와야함
         roomHandler = new Handler(msg -> {
-            if(msg.obj != null) {
-                addItem(false, "hwang", "1/8");
-            }
             if(msg.what == 400) {
-                if(msg.obj.equals("1")){
+                try {
+                    JSONObject receiveData = new JSONObject(msg.obj.toString());
+                    int status = Integer.parseInt(receiveData.getString("status"));
+                    if(status == 1){
                     Intent gameIntent = new Intent(RoomActivity.this, GameActivity.class);
                     gameIntent.putExtra("roomName", roomName);
                     gameIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                     startActivity(gameIntent);
                 }else{
                     Toast.makeText(getApplicationContext(), "방 생성에 실패 했습니다.", Toast.LENGTH_SHORT).show();
+                }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
             }
             return true;
@@ -136,7 +149,7 @@ public class RoomActivity extends AppCompatActivity {
         cram.setHandler(roomHandler);
         // 초기 방 목록 10개 정도 불러오기
         if(cram.isConnected()) {
-            cram.send("r&1");
+            cram.send(requestRoom.toString());
         }else{
             Toast.makeText(getApplicationContext(), "인터넷 연결을 확인해 주세요.", Toast.LENGTH_SHORT).show();
         }
@@ -168,7 +181,7 @@ public class RoomActivity extends AppCompatActivity {
                 mList.remove(mList.size() - 1);
                 int scrollPosition = mList.size();
                 mAdapter.notifyItemRemoved(scrollPosition);
-                cram.send("r&1");
+                cram.send(requestRoom.toString());
                 /*
                 int currentSize = scrollPosition;
                 int nextLimit = currentSize + 10;
