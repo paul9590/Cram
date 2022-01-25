@@ -174,6 +174,7 @@ public class ClientService extends Service {
                         message = new String(buffer, 0, size, StandardCharsets.UTF_8);
                         if(!message.equals("")){
                             Message msg = new Message();
+                            Log.e("핸들러는 : ", "" + receiveHandler);
                             Log.e("에러인가요", "" + message);
                             JSONObject receiveData = new JSONObject(message);
                             msg.what = receiveData.getInt("what");

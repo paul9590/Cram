@@ -142,19 +142,26 @@ public class GameActivity extends AppCompatActivity {
 
             int cnt = 0;
             final int max = playerName.length * 2;
-            int loser = 4;
-            int fin = max + loser;
+            int loser = 0;
 
             @Override
             public boolean handleMessage(Message msg) {
                 int n = (int) msg.obj;
                 cnt++;
+                int fin = max + loser;
                 if(cnt > fin){
                     isRolling = false;
                     for (int i = 0; i < playerName.length; i++) {
                         imgPlayer[i].setBackgroundColor(Color.WHITE);
                     }
                     imgPlayer[loser].setBackgroundColor(Color.RED);
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            cnt = 0;
+                            imgPlayer[n].setBackgroundColor(Color.WHITE);
+                        }
+                    }, 3000);
                 }else {
                     for (int i = 0; i < playerName.length; i++) {
                         imgPlayer[i].setBackgroundColor(Color.WHITE);
@@ -164,6 +171,7 @@ public class GameActivity extends AppCompatActivity {
                 return true;
             }
         });
+
 
 
         gameHandler = new Handler(msg -> {
@@ -208,17 +216,17 @@ public class GameActivity extends AppCompatActivity {
             public void run() {
                 super.run();
                 while(true) {
-                    if(isRolling) {
-                        try {
-                            for (int i = 0; i < playerName.length; i++) {
-                                Message msg = new Message();
-                                msg.obj = i;
-                                rollHandler.sendMessage(msg);
-                                Thread.sleep(200);
-                            }
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
+                    try {
+                        if(isRolling) {
+                                for (int i = 0; i < playerName.length; i++) {
+                                    Message msg = new Message();
+                                    msg.obj = i;
+                                    rollHandler.sendMessage(msg);
+                                    Thread.sleep(200);
+                                }
                         }
+                    } catch (InterruptedException e) {
+                            e.printStackTrace();
                     }
                 }
             }

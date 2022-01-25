@@ -59,7 +59,6 @@ public class RoomActivity extends AppCompatActivity {
     String roomName;
     JSONObject requestRoom;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
