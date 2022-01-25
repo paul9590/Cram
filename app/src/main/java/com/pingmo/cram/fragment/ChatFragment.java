@@ -1,7 +1,6 @@
 package com.pingmo.cram.fragment;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,10 +12,12 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.pingmo.cram.Cram;
 import com.pingmo.cram.R;
 import com.pingmo.cram.activity.GameActivity;
 import com.pingmo.cram.adapter.RecyclerChatAdapter;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -29,9 +30,7 @@ public class ChatFragment extends Fragment {
 
     RecyclerView mRecyclerView = null;
     RecyclerChatAdapter mAdapter = null;
-    ArrayList<String> mList;
-    Handler chatHandler;
-    Cram cram = Cram.getInstance();
+    public ArrayList<String> mList;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -89,8 +88,14 @@ public class ChatFragment extends Fragment {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if(keyCode == event.KEYCODE_ENTER){
                     if (!editChat.getText().toString().trim().equals("")) {
-                        String s = format + editChat.getText().toString();
-                        cram.send(s);
+                        try {
+                            JSONObject sendData = new JSONObject();
+                            sendData.put("what", 200);
+                            sendData.put("chat", editChat.getText().toString());
+                            ((GameActivity) getActivity()).cram.send(sendData.toString());
+                        }catch (JSONException e){
+                            e.printStackTrace();
+                        }
                     }
                     return true;
                 }
@@ -101,8 +106,15 @@ public class ChatFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if (!editChat.getText().toString().trim().equals("")) {
-                    String s = format + editChat.getText().toString();
-                    cram.send(s);
+                    try {
+                        JSONObject sendData = new JSONObject();
+                        sendData.put("what", 200);
+                        sendData.put("chat", editChat.getText().toString());
+                        ((GameActivity) getActivity()).cram.send(sendData.toString());
+                    }catch (JSONException e){
+                        e.printStackTrace();
+                    }
+
                 }
             }
         });
@@ -112,19 +124,11 @@ public class ChatFragment extends Fragment {
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false));
 
-        chatHandler = new Handler(msg -> {
-            String chat = msg.obj.toString();
-            mList.add(chat);
-            mAdapter.notifyDataSetChanged();
-            return true;
-        });
-
         return rootView;
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        cram.setHandler(chatHandler);
+    public void addChat(String s){
+        mList.add(s);
+        mAdapter.notifyDataSetChanged();
     }
 }

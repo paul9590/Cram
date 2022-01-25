@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".fragment.DeckFragment"
+    android:background="@drawable/layoutshape">
+
+
+    <TextView
+        android:id="@+id/txtCardPick"
+        android:text="카드를 6개 골라 주세요."
+        android:textSize="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/guideCardPickHo1"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideCardPickHo1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.2" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideCardPickHo2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.75" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideCardPickHo3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.80" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideCardPickHo4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.95" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideCardPickL"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.05" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideCardPickR"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.95" />
+
+
+    <ImageView
+        android:id="@+id/imgPick1"
+        android:layout_width="60dp"
+        android:layout_height="80dp"
+        android:src="@drawable/card1"
+        android:background="@drawable/layoutshape"
+        android:scaleType="fitXY"
+        android:padding="5dp"
+        app:layout_constraintLeft_toLeftOf="@id/guideCardPickL"
+        app:layout_constraintRight_toLeftOf="@id/imgPick2"
+        app:layout_constraintTop_toBottomOf="@id/guideCardPickHo1"
+        app:layout_constraintBottom_toTopOf="@id/imgPick6"/>
+
+    <ImageView
+        android:id="@+id/imgPick2"
+        android:layout_width="60dp"
+        android:layout_height="80dp"
+        android:src="@drawable/card2"
+        android:background="@drawable/layoutshape"
+        android:scaleType="fitXY"
+        android:padding="5dp"
+        app:layout_constraintLeft_toRightOf="@id/imgPick1"
+        app:layout_constraintRight_toLeftOf="@id/imgPick3"
+        app:layout_constraintTop_toBottomOf="@id/guideCardPickHo1"
+        app:layout_constraintBottom_toTopOf="@id/imgPick7"/>
+
+    <ImageView
+        android:id="@+id/imgPick3"
+        android:layout_width="60dp"
+        android:layout_height="80dp"
+        android:src="@drawable/card3"
+        android:background="@drawable/layoutshape"
+        android:scaleType="fitXY"
+        android:padding="5dp"
+        app:layout_constraintLeft_toRightOf="@id/imgPick2"
+        app:layout_constraintRight_toLeftOf="@id/imgPick4"
+        app:layout_constraintTop_toBottomOf="@id/guideCardPickHo1"
+        app:layout_constraintBottom_toTopOf="@id/imgPick8"/>
+
+    <ImageView
+        android:id="@+id/imgPick4"
+        android:layout_width="60dp"
+        android:layout_height="80dp"
+        android:src="@drawable/card4"
+        android:background="@drawable/layoutshape"
+        android:scaleType="fitXY"
+        android:padding="5dp"
+        app:layout_constraintLeft_toRightOf="@id/imgPick3"
+        app:layout_constraintRight_toLeftOf="@id/imgPick5"
+        app:layout_constraintTop_toBottomOf="@id/guideCardPickHo1"
+        app:layout_constraintBottom_toTopOf="@id/imgPick9"/>
+
+    <ImageView
+        android:id="@+id/imgPick5"
+        android:layout_width="60dp"
+        android:layout_height="80dp"
+        android:src="@drawable/card5"
+        android:background="@drawable/layoutshape"
+        android:scaleType="fitXY"
+        android:padding="5dp"
+        app:layout_constraintLeft_toRightOf="@id/imgPick4"
+        app:layout_constraintRight_toRightOf="@id/guideCardPickR"
+        app:layout_constraintTop_toBottomOf="@id/guideCardPickHo1"
+        app:layout_constraintBottom_toTopOf="@id/imgPick10"/>
+
+    <ImageView
+        android:id="@+id/imgPick6"
+        android:layout_width="60dp"
+        android:layout_height="80dp"
+        android:src="@drawable/card6"
+        android:background="@drawable/layoutshape"
+        android:scaleType="fitXY"
+        android:padding="5dp"
+        app:layout_constraintLeft_toLeftOf="@id/guideCardPickL"
+        app:layout_constraintRight_toLeftOf="@id/imgPick7"
+        app:layout_constraintTop_toBottomOf="@id/imgPick1"
+        app:layout_constraintBottom_toTopOf="@id/imgPick11"/>
+
+    <ImageView
+        android:id="@+id/imgPick7"
+        android:layout_width="60dp"
+        android:layout_height="80dp"
+        android:src="@drawable/card7"
+        android:background="@drawable/layoutshape"
+        android:scaleType="fitXY"
+        android:padding="5dp"
+        app:layout_constraintLeft_toRightOf="@id/imgPick6"
+        app:layout_constraintRight_toLeftOf="@id/imgPick8"
+        app:layout_constraintTop_toBottomOf="@id/imgPick2"
+        app:layout_constraintBottom_toTopOf="@id/imgPick12"/>
+
+    <ImageView
+        android:id="@+id/imgPick8"
+        android:layout_width="60dp"
+        android:layout_height="80dp"
+        android:src="@drawable/card8"
+        android:background="@drawable/layoutshape"
+        android:scaleType="fitXY"
+        android:padding="5dp"
+        app:layout_constraintLeft_toRightOf="@id/imgPick7"
+        app:layout_constraintRight_toLeftOf="@id/imgPick9"
+        app:layout_constraintTop_toBottomOf="@id/imgPick3"
+        app:layout_constraintBottom_toTopOf="@id/imgPick13"/>
+
+    <ImageView
+        android:id="@+id/imgPick9"
+        android:layout_width="60dp"
+        android:layout_height="80dp"
+        android:src="@drawable/card9"
+        android:background="@drawable/layoutshape"
+        android:scaleType="fitXY"
+        android:padding="5dp"
+        app:layout_constraintLeft_toRightOf="@id/imgPick8"
+        app:layout_constraintRight_toLeftOf="@id/imgPick10"
+        app:layout_constraintTop_toBottomOf="@id/imgPick4"
+        app:layout_constraintBottom_toTopOf="@id/imgPick14"/>
+
+    <ImageView
+        android:id="@+id/imgPick10"
+        android:layout_width="60dp"
+        android:layout_height="80dp"
+        android:src="@drawable/card10"
+        android:background="@drawable/layoutshape"
+        android:scaleType="fitXY"
+        android:padding="5dp"
+        app:layout_constraintLeft_toRightOf="@id/imgPick9"
+        app:layout_constraintRight_toRightOf="@id/guideCardPickR"
+        app:layout_constraintTop_toBottomOf="@id/imgPick5"
+        app:layout_constraintBottom_toTopOf="@id/imgPick15"/>
+
+    <ImageView
+        android:id="@+id/imgPick11"
+        android:layout_width="60dp"
+        android:layout_height="80dp"
+        android:src="@drawable/card11"
+        android:background="@drawable/layoutshape"
+        android:scaleType="fitXY"
+        android:padding="5dp"
+        app:layout_constraintLeft_toLeftOf="@id/guideCardPickL"
+        app:layout_constraintRight_toLeftOf="@id/imgPick12"
+        app:layout_constraintTop_toBottomOf="@id/imgPick6"
+        app:layout_constraintBottom_toTopOf="@id/guideCardPickHo2"/>
+
+    <ImageView
+        android:id="@+id/imgPick12"
+        android:layout_width="60dp"
+        android:layout_height="80dp"
+        android:src="@drawable/card12"
+        android:background="@drawable/layoutshape"
+        android:scaleType="fitXY"
+        android:padding="5dp"
+        app:layout_constraintLeft_toRightOf="@id/imgPick11"
+        app:layout_constraintRight_toLeftOf="@id/imgPick13"
+        app:layout_constraintTop_toBottomOf="@id/imgPick7"
+        app:layout_constraintBottom_toTopOf="@id/guideCardPickHo2"/>
+
+    <ImageView
+        android:id="@+id/imgPick13"
+        android:layout_width="60dp"
+        android:layout_height="80dp"
+        android:src="@drawable/card13"
+        android:background="@drawable/layoutshape"
+        android:scaleType="fitXY"
+        android:padding="5dp"
+        app:layout_constraintLeft_toRightOf="@id/imgPick12"
+        app:layout_constraintRight_toLeftOf="@id/imgPick14"
+        app:layout_constraintTop_toBottomOf="@id/imgPick8"
+        app:layout_constraintBottom_toTopOf="@id/guideCardPickHo2"/>
+
+    <ImageView
+        android:id="@+id/imgPick14"
+        android:layout_width="60dp"
+        android:layout_height="80dp"
+        android:src="@drawable/card14"
+        android:background="@drawable/layoutshape"
+        android:scaleType="fitXY"
+        android:padding="5dp"
+        app:layout_constraintLeft_toRightOf="@id/imgPick13"
+        app:layout_constraintRight_toLeftOf="@id/imgPick15"
+        app:layout_constraintTop_toBottomOf="@id/imgPick9"
+        app:layout_constraintBottom_toTopOf="@id/guideCardPickHo2"/>
+
+    <ImageView
+        android:id="@+id/imgPick15"
+        android:layout_width="60dp"
+        android:layout_height="80dp"
+        android:src="@drawable/card15"
+        android:background="@drawable/layoutshape"
+        android:scaleType="fitXY"
+        android:padding="5dp"
+        app:layout_constraintLeft_toRightOf="@id/imgPick14"
+        app:layout_constraintRight_toRightOf="@id/guideCardPickR"
+        app:layout_constraintTop_toBottomOf="@id/imgPick10"
+        app:layout_constraintBottom_toTopOf="@id/guideCardPickHo2"/>
+
+    <Button
+        android:id="@+id/btnPick"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="확인"
+        app:layout_constraintLeft_toLeftOf="@id/guideCardPickL"
+        app:layout_constraintRight_toRightOf="@id/guideCardPickR"
+        app:layout_constraintTop_toBottomOf="@id/guideCardPickHo3"
+        app:layout_constraintBottom_toTopOf="@id/guideCardPickHo4"/>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

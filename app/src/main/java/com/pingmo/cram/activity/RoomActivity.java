@@ -6,7 +6,6 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -14,7 +13,6 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,11 +38,13 @@ import java.util.Comparator;
 
 public class RoomActivity extends AppCompatActivity {
 
+    Cram cram = Cram.getInstance();
+
     RecyclerView viewRoom = null;
     RecyclerRoomAdapter mAdapter = null;
     ArrayList<RecyclerRoomList> mList;
     Boolean isLoading = false;
-    Cram cram = Cram.getInstance();
+
     Handler roomHandler;
     Dialog roomDialog;
 
@@ -53,10 +53,12 @@ public class RoomActivity extends AppCompatActivity {
     int roomMax = MIN_PLAYER;
     final int PW_LENGTH = 8;
     final int ROOM_LENGTH = 20;
+    int roomCnt = 0;
 
     String [] filter;
     String roomName;
     JSONObject requestRoom;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +74,8 @@ public class RoomActivity extends AppCompatActivity {
 
         requestRoom = new JSONObject();
         try {
-            requestRoom.put("what", "403");
+            requestRoom.put("what", 403);
+            requestRoom.put("roomCnt", Integer.toString(roomCnt));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -116,27 +119,39 @@ public class RoomActivity extends AppCompatActivity {
                 }
             }
         });
-
+        // 언젠가 지울거임
         addItem(false, "hwang", "1/8");
 
-        // 방 목록 불러 와야함
         roomHandler = new Handler(msg -> {
-            if(msg.what == 400) {
-                try {
-                    JSONObject receiveData = new JSONObject(msg.obj.toString());
+            try {
+                JSONObject receiveData = new JSONObject(msg.obj.toString());
+                if(msg.what == 400) {
                     int status = Integer.parseInt(receiveData.getString("status"));
                     if(status == 1){
-                    Intent gameIntent = new Intent(RoomActivity.this, GameActivity.class);
-                    gameIntent.putExtra("roomName", roomName);
-                    gameIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                    startActivity(gameIntent);
-                }else{
-                    Toast.makeText(getApplicationContext(), "방 생성에 실패 했습니다.", Toast.LENGTH_SHORT).show();
+                        Intent gameIntent = new Intent(RoomActivity.this, GameActivity.class);
+                        gameIntent.putExtra("roomName", roomName);
+                        gameIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                        startActivity(gameIntent);
+                        if(roomDialog.isShowing()) {
+                            roomDialog.dismiss();
+                        }
+                    }else{
+                        Toast.makeText(getApplicationContext(), "방 생성에 실패 했습니다.", Toast.LENGTH_SHORT).show();
+                    }
                 }
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                if(msg.what == 403) {
+                    roomCnt += 5;
+                    JSONArray datas = receiveData.getJSONArray("detail");
+                    for(int i = 0; i < datas.length(); i++) {
+                        JSONObject data = (JSONObject) datas.get(i);
+                        boolean isLock = data.getString("roomPW").length() > 0;
+                        String roomName = data.getString("roomName");
+                        String roomInfo = data.getString("curPlayer") + "/" + data.getString("maxPlayer");
+                        addItem(isLock, roomName, roomInfo);
+                    }
                 }
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
             return true;
         });
@@ -182,17 +197,6 @@ public class RoomActivity extends AppCompatActivity {
                 int scrollPosition = mList.size();
                 mAdapter.notifyItemRemoved(scrollPosition);
                 cram.send(requestRoom.toString());
-                /*
-                int currentSize = scrollPosition;
-                int nextLimit = currentSize + 10;
-
-                while (currentSize - 1 < nextLimit) {
-                    // 여기서 방 불러오는 서버 코드
-
-                    currentSize++;
-                }
-                 */
-
                 Collections.sort(mList, new Comparator<RecyclerRoomList>() {
                     @Override
                     public int compare(RecyclerRoomList o1, RecyclerRoomList o2) {
@@ -264,11 +268,12 @@ public class RoomActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 roomName = editRoomName.getText().toString();
-                String roomPw = editRoomPw.getText().toString();
+                String roomPW = editRoomPw.getText().toString();
                 boolean confirm = true;
 
                 if(roomName.equals("")){
                     Toast.makeText(getApplicationContext(), "방 이름을 작성해 주세요.", Toast.LENGTH_SHORT).show();
+                    confirm = false;
                 }
                 if (roomName.length() > ROOM_LENGTH){
                     Toast.makeText(getApplicationContext(), "방 이름은 " + ROOM_LENGTH + "자리를 넘길 수 없습니다.", Toast.LENGTH_SHORT).show();
@@ -281,10 +286,11 @@ public class RoomActivity extends AppCompatActivity {
                     }
                 }
                 if(chkRoomLock.isChecked()){
-                    if(roomPw.equals("")){
+                    if(roomPW.equals("")){
                         Toast.makeText(getApplicationContext(), "비밀번호를 작성해 주세요.", Toast.LENGTH_SHORT).show();
+                        confirm = false;
                     }
-                    if(roomPw.length() > PW_LENGTH){
+                    if(roomPW.length() > PW_LENGTH){
                         Toast.makeText(getApplicationContext(), "비밀번호는 " + PW_LENGTH + "자리를 넘길 수 없습니다.", Toast.LENGTH_SHORT).show();
                         confirm = false;
                     }
@@ -293,14 +299,13 @@ public class RoomActivity extends AppCompatActivity {
                 if(confirm) {
                     try {
                         JSONObject sendData = new JSONObject();
-                        sendData.put("what", "400");
+                        sendData.put("what", 400);
                         sendData.put("roomName", roomName);
                         sendData.put("maxPlayer", txtRoomMax.getText().toString());
                         if(chkRoomLock.isChecked()) {
-                            sendData.put("roomPw", roomPw);
-                        }else{
-                            sendData.put("roomPw", "");
+                            roomPW = "";
                         }
+                        sendData.put("roomPW", roomPW);
                         cram.send(sendData.toString());
 
                     } catch (JSONException e) {

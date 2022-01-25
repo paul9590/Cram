@@ -9,58 +9,54 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.view.Gravity;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
-import android.view.WindowManager;
-import android.widget.Adapter;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
+import com.pingmo.cram.Cram;
 import com.pingmo.cram.MyDBHelper;
-import com.pingmo.cram.adapter.RecyclerNoticeAdapter;
-import com.pingmo.cram.fragment.ChatFragment;
-import com.pingmo.cram.fragment.DeckFragment;
 import com.pingmo.cram.R;
+import com.pingmo.cram.adapter.GameViewAdapter;
 
-import java.util.ArrayList;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class GameActivity extends AppCompatActivity {
     public MyDBHelper myDb;
     public SQLiteDatabase sqlDb;
     public String userName;
+    
+    public Cram cram = Cram.getInstance();
+    Handler gameHandler;
 
     boolean onGaming = false;
     boolean isHost = true;
 
     Dialog gamePlayerDialog;
-    String playerName [];
-    ImageView imgPlayer [];
-    TextView txtPlayer [];
+    Dialog cardPickDialog;
 
-    int playerImg [];
+    String[] playerName;
+    ImageView[] imgPlayer;
+    TextView[] txtPlayer;
 
+    int[] playerImg;
+
+    //룰렛
     Thread rollThread;
     boolean isRolling = true;
     Handler rollHandler;
+
+    //덱 고르기
+    int pickedCard = 0;
+    int[] deck = new int[6];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,12 +66,13 @@ public class GameActivity extends AppCompatActivity {
         myDb = new MyDBHelper(this);
         sqlDb = myDb.getReadableDatabase();
         Cursor cur = sqlDb.rawQuery("SELECT * FROM userTB", null);
-
         if (cur.getCount() > 0) {
             cur.moveToFirst();
             int n = cur.getColumnIndex("userName");
             userName = cur.getString(n);
         }
+        cur.close();
+        sqlDb.close();
 
         Intent gameIntent = getIntent();
         String roomName = gameIntent.getStringExtra("roomName");
@@ -84,6 +81,12 @@ public class GameActivity extends AppCompatActivity {
 
         ViewPager pager = findViewById(R.id.pagerGame);
         TabLayout tabLayout = findViewById(R.id.tabGame);
+
+        GameViewAdapter adapter = new GameViewAdapter(getSupportFragmentManager());
+        pager.setAdapter(adapter);
+        tabLayout.setupWithViewPager(pager);
+
+
 
         txtPlayer = new TextView[] {
                 findViewById(R.id.txtPlayer1),
@@ -107,7 +110,6 @@ public class GameActivity extends AppCompatActivity {
                 findViewById(R.id.imgPlayer8),
         };
 
-
         playerName = new String[]{"paul", "pool", "poly", "holy",
                 "ppap", "poul", "p", ""};
 
@@ -123,24 +125,46 @@ public class GameActivity extends AppCompatActivity {
             imgPlayer[i].setTag("UnLocked");
             int num = i;
 
-            imgPlayer[i].setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if(!onGaming) {
-                        gamePlayerDialog = new Dialog(GameActivity.this);
-                        gamePlayerDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                        gamePlayerDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                        if(playerName[num].equals("") && isHost){
-                            gamePlayerDialog.setContentView(R.layout.dial_player2);
-                            gamePlayerDial2(num);
-                        }else if(playerName[num].length() > 0){
-                            gamePlayerDialog.setContentView(R.layout.dial_player);
-                            gamePlayerDial(num);
-                        }
+            imgPlayer[i].setOnClickListener(v -> {
+                if(!onGaming) {
+                    gamePlayerDialog = new Dialog(GameActivity.this);
+                    gamePlayerDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                    gamePlayerDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                    if(playerName[num].equals("") && isHost){
+                        gamePlayerDialog.setContentView(R.layout.dial_player2);
+                        gamePlayerDial2(num);
+                    }else if(playerName[num].length() > 0){
+                        gamePlayerDialog.setContentView(R.layout.dial_player);
+                        gamePlayerDial(num);
                     }
                 }
             });
         }
+        
+        gameHandler = new Handler(msg -> {
+            try {
+                JSONObject receiveData = new JSONObject(msg.obj.toString());
+                if(msg.what == 200){
+                    // 채팅
+                    adapter.addChat(receiveData.getString("who") + " : " + receiveData.getString("chat"));
+                }
+                if(msg.what == 300) {
+                    //덱 제출
+                    int status = Integer.parseInt(receiveData.getString("status"));
+                    if(status == 1){
+                        if(cardPickDialog.isShowing()){
+                            cardPickDialog.dismiss();
+                        }
+                        adapter.setDeck(deck);
+                    }else{
+                        Toast.makeText(getApplicationContext(), "카드 제출에 실패 했습니다.", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return true;
+        });
 
         rollThread = new Thread(){
             @Override
@@ -165,7 +189,7 @@ public class GameActivity extends AppCompatActivity {
         rollHandler = new Handler(new Handler.Callback() {
 
             int cnt = 0;
-            int max = playerName.length * 2;
+            final int max = playerName.length * 2;
             int loser = 0;
             int fin = max + loser;
 
@@ -191,11 +215,19 @@ public class GameActivity extends AppCompatActivity {
 
         txtGameTitle.setText(roomName);
 
-        GameActivity.ViewpagerAdapter adapter = new GameActivity.ViewpagerAdapter(getSupportFragmentManager());
-        pager.setAdapter(adapter);
+        txtGameTitle.setOnClickListener(v -> {
+            cardPickDialog = new Dialog(GameActivity.this);
+            cardPickDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            cardPickDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            cardPickDialog.setContentView(R.layout.dial_cardpick);
+            cardPickDialog();
+        });
 
-        tabLayout.setupWithViewPager(pager);
-
+    }
+    @Override
+    public void onStart() {
+        super.onStart();
+        cram.setHandler(gameHandler);
     }
 
     @Override
@@ -204,37 +236,60 @@ public class GameActivity extends AppCompatActivity {
         overridePendingTransition(0,0);
     }
 
-    public static class ViewpagerAdapter extends FragmentPagerAdapter {
-
-        private ArrayList<Fragment> arrayList = new ArrayList<>();
-        private ArrayList<String> name = new ArrayList<>();
-
-        public ViewpagerAdapter(@NonNull FragmentManager fm) {
-            super(fm);
-            arrayList.add(new ChatFragment());
-            arrayList.add(new DeckFragment());
-
-            name.add("채팅");
-            name.add("카드");
+    public void cardPickDialog() {
+        cardPickDialog.show();
+        Button btnPick = cardPickDialog.findViewById(R.id.btnPick);
+        ImageView [] imgPick = {
+                cardPickDialog.findViewById(R.id.imgPick1),
+                cardPickDialog.findViewById(R.id.imgPick2),
+                cardPickDialog.findViewById(R.id.imgPick3),
+                cardPickDialog.findViewById(R.id.imgPick4),
+                cardPickDialog.findViewById(R.id.imgPick5),
+                cardPickDialog.findViewById(R.id.imgPick6),
+                cardPickDialog.findViewById(R.id.imgPick7),
+                cardPickDialog.findViewById(R.id.imgPick8),
+                cardPickDialog.findViewById(R.id.imgPick9),
+                cardPickDialog.findViewById(R.id.imgPick10),
+                cardPickDialog.findViewById(R.id.imgPick11),
+                cardPickDialog.findViewById(R.id.imgPick12),
+                cardPickDialog.findViewById(R.id.imgPick13),
+                cardPickDialog.findViewById(R.id.imgPick14),
+                cardPickDialog.findViewById(R.id.imgPick15),
+        };
+        for(int i = 0; i < imgPick.length; i++) {
+            int num = i;
+            imgPick[num].setTag("UnPicked");
+            imgPick[i].setOnClickListener(v -> {
+                if (imgPick[num].getTag().equals("Picked") && pickedCard > 0) {
+                    imgPick[num].setTag("UnPicked");
+                    imgPick[num].setColorFilter(Color.parseColor("#00000000"));
+                    pickedCard--;
+                } else if (pickedCard < 6){
+                    imgPick[num].setTag("Picked");
+                    imgPick[num].setColorFilter(R.color.mainColor);
+                    pickedCard++;
+                }
+            });
         }
-
-        @Nullable
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return name.get(position);
-        }
-
-        @NonNull
-        @Override
-        public Fragment getItem(int position) {
-            return arrayList.get(position);
-        }
-
-        @Override
-        public int getCount() {
-            return arrayList.size();
-        }
-
+        btnPick.setOnClickListener(v -> {
+            if(pickedCard == 6){
+                try {
+                    JSONObject sendData = new JSONObject();
+                    sendData.put("what", 300);
+                    int cnt = 1;
+                    for(int i = 0; i < imgPick.length; i++) {
+                        if(imgPick[i].getTag().equals("Picked")){
+                            sendData.put(String.valueOf(cnt), Integer.toString(i + 1));
+                            deck[cnt - 1] = i;
+                            cnt++;
+                        }
+                    }
+                    cram.send(sendData.toString());
+                }catch (JSONException e){
+                    e.printStackTrace();
+                }
+            }
+        });
     }
     public void gamePlayerDial(int num){
         gamePlayerDialog.show();
@@ -254,23 +309,15 @@ public class GameActivity extends AppCompatActivity {
             btnPlayerKick.setVisibility(View.INVISIBLE);
         }
 
-        btnPlayerKick.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //서버 측 강퇴
-                imgPlayer[num].setImageResource(R.drawable.layoutshape);
-                imgPlayer[num].setTag("UnLocked");
-                txtPlayer[num].setText("");
-                gamePlayerDialog.dismiss();
-            }
+        btnPlayerKick.setOnClickListener(v -> {
+            //서버 측 강퇴
+            imgPlayer[num].setImageResource(R.drawable.layoutshape);
+            imgPlayer[num].setTag("UnLocked");
+            txtPlayer[num].setText("");
+            gamePlayerDialog.dismiss();
         });
 
-        btnPlayerExit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                gamePlayerDialog.dismiss();
-            }
-        });
+        btnPlayerExit.setOnClickListener(v -> gamePlayerDialog.dismiss());
     }
     public void gamePlayerDial2(int num){
         gamePlayerDialog.show();
@@ -291,37 +338,26 @@ public class GameActivity extends AppCompatActivity {
             btnPlayerLock.setText("풀기");
         }
 
-        btnAddBot.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // 서버 봇 추가
-                imgPlayer[num].setImageResource(R.drawable.ic_launcher_background);
-                imgPlayer[num].setTag("Bot");
-                txtPlayer[num].setText("Bot" + (num + 1));
-                gamePlayerDialog.dismiss();
+        btnAddBot.setOnClickListener(v -> {
+            // 서버 봇 추가
+            imgPlayer[num].setImageResource(R.drawable.ic_launcher_background);
+            imgPlayer[num].setTag("Bot");
+            txtPlayer[num].setText("Bot" + (num + 1));
+            gamePlayerDialog.dismiss();
 
-            }
         });
-        btnPlayerLock.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // 이미지 바꾸고 서버 측 숫자 수정
-                if(btnPlayerLock.getText().toString().equals("잠그기")) {
-                    imgPlayer[num].setImageResource(R.drawable.ic_launcher_foreground);
-                    imgPlayer[num].setTag("Locked");
-                }else{
-                    imgPlayer[num].setImageResource(R.drawable.layoutshape);
-                    imgPlayer[num].setTag("UnLocked");
-                }
-                txtPlayer[num].setText("");
-                gamePlayerDialog.dismiss();
+        btnPlayerLock.setOnClickListener(v -> {
+            // 이미지 바꾸고 서버 측 숫자 수정
+            if(btnPlayerLock.getText().toString().equals("잠그기")) {
+                imgPlayer[num].setImageResource(R.drawable.ic_launcher_foreground);
+                imgPlayer[num].setTag("Locked");
+            }else{
+                imgPlayer[num].setImageResource(R.drawable.layoutshape);
+                imgPlayer[num].setTag("UnLocked");
             }
+            txtPlayer[num].setText("");
+            gamePlayerDialog.dismiss();
         });
-        btnPlayerEixt2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                gamePlayerDialog.dismiss();
-            }
-        });
+        btnPlayerEixt2.setOnClickListener(v -> gamePlayerDialog.dismiss());
     }
 }

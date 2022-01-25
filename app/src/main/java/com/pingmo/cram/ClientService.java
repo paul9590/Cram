@@ -176,7 +176,7 @@ public class ClientService extends Service {
                             Message msg = new Message();
                             Log.e("에러인가요", "" + message);
                             JSONObject receiveData = new JSONObject(message);
-                            msg.what = Integer.parseInt(receiveData.getString("what"));
+                            msg.what = receiveData.getInt("what");
                             msg.obj = receiveData.toString();
                             receiveHandler.sendMessage(msg);
                         }

@@ -154,7 +154,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        cram.disconnect();
+        if(cram.isConnected()) {
+            cram.disconnect();
+        }
     }
 
     @Override

@@ -5,7 +5,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
@@ -22,6 +21,7 @@ public class DeckFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    ImageView [] imgDeck;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -64,7 +64,7 @@ public class DeckFragment extends Fragment {
         // Inflate the layout for this fragment
         View rootView =  inflater.inflate(R.layout.fragment_deck, container, false);
 
-        ImageView [] imgDeck = {
+        imgDeck = new ImageView[]{
                 rootView.findViewById(R.id.imgDeck1),
                 rootView.findViewById(R.id.imgDeck2),
                 rootView.findViewById(R.id.imgDeck3),
@@ -81,5 +81,29 @@ public class DeckFragment extends Fragment {
         }
 
         return rootView;
+    }
+
+    public void setDeck(int deck []) {
+        int card [] = {
+                R.drawable.card1,
+                R.drawable.card2,
+                R.drawable.card3,
+                R.drawable.card4,
+                R.drawable.card5,
+                R.drawable.card6,
+                R.drawable.card7,
+                R.drawable.card8,
+                R.drawable.card9,
+                R.drawable.card10,
+                R.drawable.card11,
+                R.drawable.card12,
+                R.drawable.card13,
+                R.drawable.card14,
+                R.drawable.card15,
+        };
+
+        for(int i = 0; i < deck.length; i++) {
+            imgDeck[i].setImageResource(card[deck[i]]);
+        }
     }
 }
