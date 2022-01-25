@@ -38,7 +38,7 @@ import java.util.Comparator;
 
 public class RoomActivity extends AppCompatActivity {
 
-    Cram cram = Cram.getInstance();
+    public Cram cram = Cram.getInstance();
 
     RecyclerView viewRoom = null;
     RecyclerRoomAdapter mAdapter = null;
@@ -53,7 +53,6 @@ public class RoomActivity extends AppCompatActivity {
     int roomMax = MIN_PLAYER;
     final int PW_LENGTH = 8;
     final int ROOM_LENGTH = 20;
-    int roomCnt = 0;
 
     String [] filter;
     String roomName;
@@ -74,7 +73,6 @@ public class RoomActivity extends AppCompatActivity {
         requestRoom = new JSONObject();
         try {
             requestRoom.put("what", 403);
-            requestRoom.put("roomCnt", Integer.toString(roomCnt));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -82,29 +80,101 @@ public class RoomActivity extends AppCompatActivity {
             try {
                 JSONObject receiveData = new JSONObject(msg.obj.toString());
                 if(msg.what == 400) {
+                    //방 생성
                     int status = Integer.parseInt(receiveData.getString("status"));
                     if(status == 1){
-                        Intent gameIntent = new Intent(RoomActivity.this, GameActivity.class);
-                        gameIntent.putExtra("roomName", roomName);
-                        gameIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                        startActivity(gameIntent);
                         if(roomDialog.isShowing()) {
                             roomDialog.dismiss();
                         }
+                        Intent gameIntent = new Intent(RoomActivity.this, GameActivity.class);
+                        String roomNum = receiveData.getString("roomNum");
+                        String roomName = receiveData.getString("roomName");
+                        boolean isLock = receiveData.getString("roomPW").length() > 0;
+                        String roomInfo = receiveData.getString("curPlayer") + "/" + receiveData.getString("maxPlayer");
+                        JSONArray pData = receiveData.getJSONArray("players");
+                        String [] players = new String[pData.length()];
+                        for(int i = 0; i < pData.length(); i++){
+                            JSONObject player = (JSONObject) pData.get(i);
+                            players[i] = player.getString(Integer.toString(i + 1));
+                        }
+
+                        gameIntent.putExtra("isLock", isLock);
+                        gameIntent.putExtra("roomNum", roomNum);
+                        gameIntent.putExtra("roomName", roomName);
+                        gameIntent.putExtra("roomInfo", roomInfo);
+                        gameIntent.putExtra("players", players);
+                        gameIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                        startActivity(gameIntent);
                     }else{
                         Toast.makeText(getApplicationContext(), "방 생성에 실패 했습니다.", Toast.LENGTH_SHORT).show();
                     }
                 }
-                if(msg.what == 403) {
-                    roomCnt += 5;
-                    JSONArray datas = receiveData.getJSONArray("detail");
-                    for(int i = 0; i < datas.length(); i++) {
-                        JSONObject data = (JSONObject) datas.get(i);
-                        boolean isLock = data.getString("roomPW").length() > 0;
-                        String roomName = data.getString("roomName");
-                        String roomInfo = data.getString("curPlayer") + "/" + data.getString("maxPlayer");
-                        addItem(isLock, roomName, roomInfo);
+                if(msg.what == 401) {
+                    // 방 입장
+                    int status = Integer.parseInt(receiveData.getString("status"));
+                    if(status == 1) {
+                        Intent gameIntent = new Intent(getApplicationContext(), GameActivity.class);
+                        String roomNum = receiveData.getString("roomNum");
+                        String roomName = receiveData.getString("roomName");
+                        boolean isLock = receiveData.getString("roomPW").length() > 0;
+                        String roomInfo = receiveData.getString("curPlayer") + "/" + receiveData.getString("maxPlayer");
+                        JSONArray pData = receiveData.getJSONArray("players");
+                        String [] players = new String[pData.length()];
+                        for(int i = 0; i < pData.length(); i++){
+                            JSONObject player = (JSONObject) pData.get(i);
+                            players[i] = player.getString(Integer.toString(i + 1));
+                        }
+
+                        gameIntent.putExtra("isLock", isLock);
+                        gameIntent.putExtra("roomNum", roomNum);
+                        gameIntent.putExtra("roomName", roomName);
+                        gameIntent.putExtra("roomInfo", roomInfo);
+                        gameIntent.putExtra("players", players);
+                        gameIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                        startActivity(gameIntent);
+                    }else{
+                        Toast.makeText(getApplicationContext(), "방 입장에 실패 했습니다.", Toast.LENGTH_SHORT).show();
                     }
+                }
+                if(msg.what == 403) {
+                    // 방 요청
+                    mList.add(null);
+                    mAdapter.notifyItemInserted(mList.size() - 1);
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mList.remove(mList.size() - 1);
+                            int scrollPosition = mList.size();
+                            mAdapter.notifyItemRemoved(scrollPosition);
+
+                            try {
+                                JSONArray datas = receiveData.getJSONArray("detail");
+                                mList.clear();
+                                for (int i = 0; i < datas.length(); i++) {
+                                    JSONObject data = (JSONObject) datas.get(i);
+                                    boolean isLock = data.getString("roomPW").length() > 0;
+                                    String roomName = data.getString("roomName");
+                                    String roomInfo = data.getString("curPlayer") + "/" + data.getString("maxPlayer");
+                                    String roomPW = data.getString("roomPW");
+                                    String roomNum = data.getString("roomNum");
+                                    addItem(isLock, roomNum, roomName, roomInfo, roomPW);
+                                }
+                            }catch (JSONException e){
+
+                            }
+                            mAdapter.notifyDataSetChanged();
+                            Collections.sort(mList, new Comparator<RecyclerRoomList>() {
+                                @Override
+                                public int compare(RecyclerRoomList o1, RecyclerRoomList o2) {
+                                    // 1 - 2 이 방에 사람이 적은 순서
+                                    return o1.getRoomInfo().compareTo(o2.getRoomInfo());
+                                }
+                            });
+                            mAdapter.notifyDataSetChanged();
+                            isLoading = false;
+                        }
+                    }, 1000);
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -146,22 +216,36 @@ public class RoomActivity extends AppCompatActivity {
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 if(!isLoading && !recyclerView.canScrollVertically(1)) {
-                    loadMore();
                     isLoading = true;
+                    if(cram.isConnected()) {
+                        cram.send(requestRoom.toString());
+                    }else{
+                        mList.add(null);
+                        mAdapter.notifyItemInserted(mList.size() - 1);
+                        Toast.makeText(getApplicationContext(), "인터넷 연결을 확인해 주세요.", Toast.LENGTH_SHORT).show();
+                        Handler handler = new Handler();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                mList.remove(mList.size() - 1);
+                                int scrollPosition = mList.size();
+                                mAdapter.notifyItemRemoved(scrollPosition);
+                                isLoading = false;
+                            }
+                        }, 1000);
+                    }
                 }
             }
         });
-        // 언젠가 지울거임
-        addItem(false, "hwang", "1/8");
     }
 
     @Override
     public void onStart() {
         super.onStart();
         cram.setHandler(roomHandler);
-        // 초기 방 목록 10개 정도 불러오기
         if(cram.isConnected()) {
             cram.send(requestRoom.toString());
+            isLoading = true;
         }else{
             Toast.makeText(getApplicationContext(), "인터넷 연결을 확인해 주세요.", Toast.LENGTH_SHORT).show();
         }
@@ -179,46 +263,20 @@ public class RoomActivity extends AppCompatActivity {
         cram.switchHandler();
     }
 
-    private void addItem(Boolean isLock, String roomName, String roomInfo) {
+    private void addItem(Boolean isLock, String roomNum, String roomName, String roomInfo, String roomPW) {
         RecyclerRoomList item = new RecyclerRoomList();
         item.setImgLock(isLock);
+        item.setRoomNum(roomNum);
         item.setRoomName(roomName);
         item.setRoomInfo(roomInfo);
+        item.setRoomPW(roomPW);
         mList.add(item);
-        mAdapter.notifyDataSetChanged();
-    }
-
-    private void loadMore() {
-        mList.add(null);
-        mAdapter.notifyItemInserted(mList.size() - 1);
-
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                mList.remove(mList.size() - 1);
-                int scrollPosition = mList.size();
-                mAdapter.notifyItemRemoved(scrollPosition);
-                cram.send(requestRoom.toString());
-                Collections.sort(mList, new Comparator<RecyclerRoomList>() {
-                    @Override
-                    public int compare(RecyclerRoomList o1, RecyclerRoomList o2) {
-                        // 1 - 2 이 방에 사람이 적은 순서
-                        return o1.getRoomInfo().compareTo(o2.getRoomInfo());
-
-                    }
-                });
-
-                mAdapter.notifyDataSetChanged();
-                isLoading = false;
-            }
-        }, 2000);
     }
 
     private void roomDial() {
         roomDialog.show();
         EditText editRoomName = roomDialog.findViewById(R.id.editRoomName);
-        EditText editRoomPw = roomDialog.findViewById(R.id.editRoomPw);
+        EditText editRoomPw = roomDialog.findViewById(R.id.editEnterRoomPw);
 
         ImageButton imbRoomCntUp = roomDialog.findViewById(R.id.imbRoomCntUp);
         ImageButton imbRoomCntDown = roomDialog.findViewById(R.id.imbRoomCntDown);
@@ -227,8 +285,8 @@ public class RoomActivity extends AppCompatActivity {
 
         CheckBox chkRoomLock = roomDialog.findViewById(R.id.chkRoomLock);
 
-        Button btnRoomDialYes = roomDialog.findViewById(R.id.btnRoomDialYes);
-        Button btnRoomDialNo = roomDialog.findViewById(R.id.btnRoomDialNo);
+        Button btnRoomDialYes = roomDialog.findViewById(R.id.btnEnterRoomYes);
+        Button btnRoomDialNo = roomDialog.findViewById(R.id.btnEnterRoomNo);
 
         txtRoomMax.setText("" + roomMax);
         editRoomPw.setVisibility(View.INVISIBLE);
@@ -285,6 +343,7 @@ public class RoomActivity extends AppCompatActivity {
 
                 for(int i = 0; i < filter.length; i++) {
                     if (roomName.contains(filter[i])){
+                        Toast.makeText(getApplicationContext(), "부적절한 이름 입니다.", Toast.LENGTH_SHORT).show();
                         confirm = false;
                     }
                 }

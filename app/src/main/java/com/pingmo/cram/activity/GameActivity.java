@@ -25,8 +25,11 @@ import com.pingmo.cram.MyDBHelper;
 import com.pingmo.cram.R;
 import com.pingmo.cram.adapter.GameViewAdapter;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.HashMap;
 
 public class GameActivity extends AppCompatActivity {
     public MyDBHelper myDb;
@@ -42,11 +45,14 @@ public class GameActivity extends AppCompatActivity {
     Dialog gamePlayerDialog;
     Dialog cardPickDialog;
 
-    String[] playerName;
-    ImageView[] imgPlayer;
+    TextView txtGameTitle;
+
+    HashMap<Integer, String> gamer = new HashMap<>();
+    String [] players;
     TextView[] txtPlayer;
 
     int[] playerImg;
+    ImageView[] imgPlayer;
 
     //룰렛
     Thread rollThread;
@@ -75,9 +81,14 @@ public class GameActivity extends AppCompatActivity {
         sqlDb.close();
 
         Intent gameIntent = getIntent();
+        boolean isLock = gameIntent.getBooleanExtra("isLock", false);
+        String roomNum = gameIntent.getStringExtra("roomNum");
         String roomName = gameIntent.getStringExtra("roomName");
+        String roomInfo = gameIntent.getStringExtra("roomInfo");
+        players = gameIntent.getStringArrayExtra("players");
 
-        TextView txtGameTitle = findViewById(R.id.txtGameTitle);
+        txtGameTitle = findViewById(R.id.txtGameTitle);
+        txtGameTitle.setText("" + roomNum + ". " + roomName + " (" + roomInfo + ")");
 
         ViewPager pager = findViewById(R.id.pagerGame);
         TabLayout tabLayout = findViewById(R.id.tabGame);
@@ -108,15 +119,14 @@ public class GameActivity extends AppCompatActivity {
                 findViewById(R.id.imgPlayer8),
         };
 
-        playerName = new String[]{"paul", "pool", "poly", "holy",
-                "ppap", "poul", "p", ""};
+        playerImg = new int[]{R.drawable.userimg, R.drawable.userimg, R.drawable.userimg, R.drawable.userimg,
+                    R.drawable.userimg, R.drawable.userimg, R.drawable.userimg, R.drawable.userimg};
 
-        playerImg = new int[]{R.drawable.help, R.drawable.userimg, R.drawable.help, R.drawable.userimg,
-                        R.drawable.help, R.drawable.userimg, R.drawable.help, R.drawable.layoutshape};
-
-        for(int i = 0; i < playerName.length; i++) {
-            txtPlayer[i].setText(playerName[i]);
+        for(int i = 0; i < players.length; i++) {
+            txtPlayer[i].setText(players[i]);
             imgPlayer[i].setImageResource(playerImg[i]);
+            imgPlayer[i].setTag("Player");
+            gamer.put(i, players[i]);
         }
 
         for(int i = 0; i < imgPlayer.length; i++) {
@@ -128,10 +138,10 @@ public class GameActivity extends AppCompatActivity {
                     gamePlayerDialog = new Dialog(GameActivity.this);
                     gamePlayerDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                     gamePlayerDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                    if(playerName[num].equals("") && isHost){
+                    if(players[num].equals("") && isHost){
                         gamePlayerDialog.setContentView(R.layout.dial_player2);
                         gamePlayerDial2(num);
-                    }else if(playerName[num].length() > 0){
+                    }else if(players[num].length() > 0){
                         gamePlayerDialog.setContentView(R.layout.dial_player);
                         gamePlayerDial(num);
                     }
@@ -141,7 +151,7 @@ public class GameActivity extends AppCompatActivity {
         rollHandler = new Handler(new Handler.Callback() {
 
             int cnt = 0;
-            final int max = playerName.length * 2;
+            final int max = gamer.size() * 2;
             int loser = 0;
 
             @Override
@@ -151,7 +161,7 @@ public class GameActivity extends AppCompatActivity {
                 int fin = max + loser;
                 if(cnt > fin){
                     isRolling = false;
-                    for (int i = 0; i < playerName.length; i++) {
+                    for (int i = 0; i < players.length; i++) {
                         imgPlayer[i].setBackgroundColor(Color.WHITE);
                     }
                     imgPlayer[loser].setBackgroundColor(Color.RED);
@@ -163,7 +173,7 @@ public class GameActivity extends AppCompatActivity {
                         }
                     }, 3000);
                 }else {
-                    for (int i = 0; i < playerName.length; i++) {
+                    for (int i = 0; i < players.length; i++) {
                         imgPlayer[i].setBackgroundColor(Color.WHITE);
                     }
                     imgPlayer[n].setBackgroundColor(Color.RED);
@@ -193,13 +203,38 @@ public class GameActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), "카드 제출에 실패 했습니다.", Toast.LENGTH_SHORT).show();
                     }
                 }
+
+                if(msg.what == 401) {
+                    // 누군가 입장
+                    String roomNum1 = receiveData.getString("roomNum");
+                    String roomName1 = receiveData.getString("roomName");
+                    boolean isLock1 = receiveData.getString("roomPW").length() > 0;
+                    String roomInfo1 = receiveData.getString("curPlayer") + "/" + receiveData.getString("maxPlayer");
+                    JSONArray pData = receiveData.getJSONArray("players");
+                    players = new String[pData.length()];
+                    for(int i = 0; i < pData.length(); i++){
+                        JSONObject player = (JSONObject) pData.get(i);
+                        players[i] = player.getString(Integer.toString(i + 1));
+                    }
+                    txtGameTitle.setText("" + roomNum1 + ". " + roomName1 + " (" + roomInfo1 + ")");
+                    for(int i = 0; i < players.length; i++) {
+                        txtPlayer[i].setText(players[i]);
+                        imgPlayer[i].setImageResource(playerImg[i]);
+                        imgPlayer[i].setTag("Player");
+                        gamer.put(i, players[i]);
+                    }
+                }
+
+                if(msg.what == 402) {
+                    // 방 나가기
+                    finish();
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
             return true;
         });
 
-        txtGameTitle.setText(roomName);
 
         txtGameTitle.setOnClickListener(v -> {
             if(!isRolling){
@@ -218,7 +253,7 @@ public class GameActivity extends AppCompatActivity {
                 while(true) {
                     try {
                         if(isRolling) {
-                                for (int i = 0; i < playerName.length; i++) {
+                                for (int i = 0; i < players.length; i++) {
                                     Message msg = new Message();
                                     msg.obj = i;
                                     rollHandler.sendMessage(msg);
@@ -237,6 +272,22 @@ public class GameActivity extends AppCompatActivity {
         super.onStart();
         cram.setHandler(gameHandler);
         rollThread.start();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        if(cram.isConnected()) {
+            try {
+                JSONObject sendData = new JSONObject();
+                sendData.put("what", 402);
+                cram.send(sendData.toString());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }else {
+            Toast.makeText(getApplicationContext(), "인터넷 연결을 확인해 주세요.", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -313,7 +364,7 @@ public class GameActivity extends AppCompatActivity {
         
         txtPlayerDial.setText("" + (num  + 1) + "번 플레이어");
         imgPlayerDetail.setImageResource(playerImg[num]);
-        txtPlayerDetail.setText(playerName[num]);
+        txtPlayerDetail.setText(players[num]);
 
         if(isHost){
             btnPlayerKick.setVisibility(View.VISIBLE);
@@ -326,6 +377,7 @@ public class GameActivity extends AppCompatActivity {
             imgPlayer[num].setImageResource(R.drawable.layoutshape);
             imgPlayer[num].setTag("UnLocked");
             txtPlayer[num].setText("");
+            gamer.remove(num);
             gamePlayerDialog.dismiss();
         });
 
@@ -355,6 +407,7 @@ public class GameActivity extends AppCompatActivity {
             imgPlayer[num].setImageResource(R.drawable.ic_launcher_background);
             imgPlayer[num].setTag("Bot");
             txtPlayer[num].setText("Bot" + (num + 1));
+            gamer.put(num, "Bot");
             gamePlayerDialog.dismiss();
 
         });
@@ -368,6 +421,7 @@ public class GameActivity extends AppCompatActivity {
                 imgPlayer[num].setTag("UnLocked");
             }
             txtPlayer[num].setText("");
+            gamer.remove(num);
             gamePlayerDialog.dismiss();
         });
         btnPlayerEixt2.setOnClickListener(v -> gamePlayerDialog.dismiss());

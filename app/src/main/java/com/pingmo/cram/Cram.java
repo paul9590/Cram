@@ -67,5 +67,6 @@ public class Cram extends Application {
         Intent intent = new Intent(context, ClientService.class);
         context.bindService(intent, connection, Context.BIND_AUTO_CREATE);
     }
+
 }
     

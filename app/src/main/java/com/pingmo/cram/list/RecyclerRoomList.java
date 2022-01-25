@@ -4,6 +4,8 @@ public class RecyclerRoomList {
     private Boolean imgLock;
     private String roomName;
     private String roomInfo;
+    private String roomPW;
+    private String roomNum;
 
     public Boolean getImgLock() {
         return imgLock;
@@ -29,4 +31,19 @@ public class RecyclerRoomList {
         this.roomInfo = roomInfo;
     }
 
+    public String getRoomPW() {
+        return roomPW;
+    }
+
+    public void setRoomPW(String roomPW) {
+        this.roomPW = roomPW;
+    }
+
+    public String getRoomNum() {
+        return roomNum;
+    }
+
+    public void setRoomNum(String roomNum) {
+        this.roomNum = roomNum;
+    }
 }

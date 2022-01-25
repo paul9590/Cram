@@ -69,7 +69,6 @@ public class MainActivity extends AppCompatActivity {
         ConstraintLayout viewProf = (ConstraintLayout) findViewById(R.id.viewProf);
         ConstraintLayout viewSetting = (ConstraintLayout) findViewById(R.id.viewSetting);
 
-
         // 유저 정보
         curUser.setName("로그인을 해주세요.");
         curUser.setRank(0);

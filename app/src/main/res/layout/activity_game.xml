@@ -261,7 +261,6 @@
             android:id="@+id/tabGame"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            tools:layout_editor_absoluteX="1dp"
             app:layout_constraintLeft_toRightOf="@id/guideGameL"
             app:layout_constraintRight_toLeftOf="@id/guideGameR"
             app:layout_constraintTop_toBottomOf="@id/guideGameTab">

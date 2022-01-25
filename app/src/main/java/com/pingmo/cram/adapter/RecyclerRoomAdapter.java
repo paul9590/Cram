@@ -1,23 +1,31 @@
 package com.pingmo.cram.adapter;
 
+import android.app.Dialog;
 import android.content.Context;
-import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.pingmo.cram.R;
-import com.pingmo.cram.list.RecyclerNoticeList;
+import com.pingmo.cram.activity.RoomActivity;
 import com.pingmo.cram.list.RecyclerRoomList;
-import com.pingmo.cram.activity.GameActivity;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -25,6 +33,8 @@ public class RecyclerRoomAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private ArrayList<RecyclerRoomList> mData;
     private ArrayList<RecyclerRoomList> filterList;
     Context context;
+    private Dialog enterRoomDialog;
+
     private final int VIEW_TYPE_ITEM = 0;
     private final int VIEW_TYPE_LOADING = 1;
 
@@ -137,10 +147,29 @@ public class RecyclerRoomAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     int pos = getAdapterPosition();
                     if(pos != RecyclerView.NO_POSITION) {
                         RecyclerRoomList item = mData.get(pos);
-                        Intent gameIntent = new Intent(context, GameActivity.class);
-                        gameIntent.putExtra("roomName", item.getRoomName());
-                        gameIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                        context.startActivity(gameIntent);
+                        String [] tmp  = item.getRoomInfo().split("/");
+
+                        // 만약 꽉 차 있지 않다면
+                        if (!tmp[0].equals(tmp[1])) {
+                            if(item.getImgLock()){
+                                //비밀번호가 있다면
+                                enterRoomDialog = new Dialog(context);
+                                enterRoomDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                                enterRoomDialog.setContentView(R.layout.dial_enterroom);
+                                enterRoomDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                                enterRoomDial(item);
+                            }else {
+                                try {
+                                    JSONObject sendData = new JSONObject();
+                                    sendData.put("what", 401);
+                                    sendData.put("roomNum", item.getRoomNum());
+                                    ((RoomActivity) context).cram.send(sendData.toString());
+
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
                     }
                 }
             });
@@ -156,4 +185,36 @@ public class RecyclerRoomAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }
     }
 
+    private void enterRoomDial(RecyclerRoomList item) {
+        enterRoomDialog.show();
+        EditText editERoomPw = enterRoomDialog.findViewById(R.id.editERoomPw);
+        Button btnERoomYes = enterRoomDialog.findViewById(R.id.btnERoomYes);
+        Button btnERoomNo = enterRoomDialog.findViewById(R.id.btnERoomNo);
+
+        btnERoomYes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(editERoomPw.getText().toString().equals(item.getRoomPW())){
+                    try {
+                        JSONObject sendData = new JSONObject();
+                        sendData.put("what", 401);
+                        sendData.put("roomNum", item.getRoomNum());
+                        ((RoomActivity) context).cram.send(sendData.toString());
+                        enterRoomDialog.dismiss();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }else{
+                    Toast.makeText(context, "비밀번호가 일치 하지 않습니다.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        btnERoomNo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                enterRoomDialog.dismiss();
+            }
+        });
+    }
 }

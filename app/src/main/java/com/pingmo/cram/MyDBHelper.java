@@ -23,13 +23,6 @@ public class MyDBHelper extends SQLiteOpenHelper {
                     "itemType Integer, " +
                     "itemValue Integer);");
 
-        db.execSQL("CREATE TABLE roomTB (roomNum Integer PRIMARY KEY, " +
-                    "roomName varchar(30)," +
-                    "roomPW varchar(10)," +
-                    "curPlayer Integer, " +
-                    "maxPlayer Integer, " +
-                    "status Integer);");
-
         db.execSQL("CREATE TABLE friendTB (friend varchar(20));");
 
         db.execSQL("CREATE TABLE inventoryTB (itemCode Integer," +
@@ -44,7 +37,6 @@ public class MyDBHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS userTB");
         db.execSQL("DROP TABLE IF EXISTS shopTB");
-        db.execSQL("DROP TABLE IF EXISTS roomTB");
         db.execSQL("DROP TABLE IF EXISTS friendTB");
         db.execSQL("DROP TABLE IF EXISTS inventoryTB");
         db.execSQL("DROP TABLE IF EXISTS equipmentTB");
@@ -54,7 +46,6 @@ public class MyDBHelper extends SQLiteOpenHelper {
     public void truncateTB(SQLiteDatabase db) {
         db.execSQL("DROP TABLE IF EXISTS userTB");
         db.execSQL("DROP TABLE IF EXISTS shopTB");
-        db.execSQL("DROP TABLE IF EXISTS roomTB");
         db.execSQL("DROP TABLE IF EXISTS friendTB");
         db.execSQL("DROP TABLE IF EXISTS inventoryTB");
         db.execSQL("DROP TABLE IF EXISTS equipmentTB");
