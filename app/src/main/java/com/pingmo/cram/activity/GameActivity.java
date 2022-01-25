@@ -16,7 +16,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
@@ -51,7 +50,7 @@ public class GameActivity extends AppCompatActivity {
 
     //룰렛
     Thread rollThread;
-    boolean isRolling = true;
+    boolean isRolling = false;
     Handler rollHandler;
 
     //덱 고르기
@@ -62,6 +61,7 @@ public class GameActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
+
 
         myDb = new MyDBHelper(this);
         sqlDb = myDb.getReadableDatabase();
@@ -85,8 +85,6 @@ public class GameActivity extends AppCompatActivity {
         GameViewAdapter adapter = new GameViewAdapter(getSupportFragmentManager());
         pager.setAdapter(adapter);
         tabLayout.setupWithViewPager(pager);
-
-
 
         txtPlayer = new TextView[] {
                 findViewById(R.id.txtPlayer1),
@@ -140,7 +138,34 @@ public class GameActivity extends AppCompatActivity {
                 }
             });
         }
-        
+        rollHandler = new Handler(new Handler.Callback() {
+
+            int cnt = 0;
+            final int max = playerName.length * 2;
+            int loser = 4;
+            int fin = max + loser;
+
+            @Override
+            public boolean handleMessage(Message msg) {
+                int n = (int) msg.obj;
+                cnt++;
+                if(cnt > fin){
+                    isRolling = false;
+                    for (int i = 0; i < playerName.length; i++) {
+                        imgPlayer[i].setBackgroundColor(Color.WHITE);
+                    }
+                    imgPlayer[loser].setBackgroundColor(Color.RED);
+                }else {
+                    for (int i = 0; i < playerName.length; i++) {
+                        imgPlayer[i].setBackgroundColor(Color.WHITE);
+                    }
+                    imgPlayer[n].setBackgroundColor(Color.RED);
+                }
+                return true;
+            }
+        });
+
+
         gameHandler = new Handler(msg -> {
             try {
                 JSONObject receiveData = new JSONObject(msg.obj.toString());
@@ -166,68 +191,44 @@ public class GameActivity extends AppCompatActivity {
             return true;
         });
 
-        rollThread = new Thread(){
-            @Override
-            public void run() {
-                super.run();
-                while(isRolling) {
-                    try {
-                        for(int i = 0; i < playerName.length; i++) {
-                            Message msg = new Message();
-                            msg.obj = i;
-                            rollHandler.sendMessage(msg);
-                            Thread.sleep(200);
-                        }
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        };
-        rollThread.start();
-
-        rollHandler = new Handler(new Handler.Callback() {
-
-            int cnt = 0;
-            final int max = playerName.length * 2;
-            int loser = 0;
-            int fin = max + loser;
-
-            @Override
-            public boolean handleMessage(@NonNull Message msg) {
-                int n = (int) msg.obj;
-                cnt++;
-                if(cnt > fin){
-                    isRolling = false;
-                    for (int i = 0; i < playerName.length; i++) {
-                        imgPlayer[i].setBackgroundColor(Color.WHITE);
-                    }
-                    imgPlayer[loser].setBackgroundColor(Color.RED);
-                }else {
-                    for (int i = 0; i < playerName.length; i++) {
-                        imgPlayer[i].setBackgroundColor(Color.WHITE);
-                    }
-                    imgPlayer[n].setBackgroundColor(Color.RED);
-                }
-                return true;
-            }
-        });
-
         txtGameTitle.setText(roomName);
 
         txtGameTitle.setOnClickListener(v -> {
+            if(!isRolling){
+                isRolling = true;
+            }
             cardPickDialog = new Dialog(GameActivity.this);
             cardPickDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
             cardPickDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             cardPickDialog.setContentView(R.layout.dial_cardpick);
             cardPickDialog();
         });
-
+        rollThread = new Thread(){
+            @Override
+            public void run() {
+                super.run();
+                while(true) {
+                    if(isRolling) {
+                        try {
+                            for (int i = 0; i < playerName.length; i++) {
+                                Message msg = new Message();
+                                msg.obj = i;
+                                rollHandler.sendMessage(msg);
+                                Thread.sleep(200);
+                            }
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        };
     }
     @Override
     public void onStart() {
         super.onStart();
         cram.setHandler(gameHandler);
+        rollThread.start();
     }
 
     @Override
@@ -239,6 +240,7 @@ public class GameActivity extends AppCompatActivity {
     public void cardPickDialog() {
         cardPickDialog.show();
         Button btnPick = cardPickDialog.findViewById(R.id.btnPick);
+        pickedCard = 0;
         ImageView [] imgPick = {
                 cardPickDialog.findViewById(R.id.imgPick1),
                 cardPickDialog.findViewById(R.id.imgPick2),
@@ -288,6 +290,8 @@ public class GameActivity extends AppCompatActivity {
                 }catch (JSONException e){
                     e.printStackTrace();
                 }
+            }else{
+                Toast.makeText(this, "카드를 6장 선택해 주세요.", Toast.LENGTH_SHORT).show();
             }
         });
     }

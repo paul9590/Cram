@@ -4,7 +4,6 @@ package com.pingmo.cram.activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -25,9 +24,13 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.pingmo.cram.Cram;
 import com.pingmo.cram.MyDBHelper;
-import com.pingmo.cram.fragment.ProfileFragment;
 import com.pingmo.cram.R;
+import com.pingmo.cram.User;
+import com.pingmo.cram.fragment.ProfileFragment;
 import com.pingmo.cram.fragment.SettingFragment;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -38,11 +41,10 @@ public class MainActivity extends AppCompatActivity {
     public MyDBHelper myDb;
     public SQLiteDatabase sqlDb;
 
-    ProfileFragment profileFragment;
-    SettingFragment settingFragment;
-    
-    public String userName = "로그인을 해주세요.";
-    public String userInfo = "점수 : 0\n캐시 : 0";
+    ProfileFragment profileFr;
+    SettingFragment settingFr;
+
+    public User curUser = new User();
     
     Cram cram = Cram.getInstance();
 
@@ -67,12 +69,50 @@ public class MainActivity extends AppCompatActivity {
         ConstraintLayout viewProf = (ConstraintLayout) findViewById(R.id.viewProf);
         ConstraintLayout viewSetting = (ConstraintLayout) findViewById(R.id.viewSetting);
 
-        profileFragment = new ProfileFragment();
-        settingFragment = new SettingFragment();
+
+        // 유저 정보
+        curUser.setName("로그인을 해주세요.");
+        curUser.setRank(0);
+        curUser.setCash(0);
+
+        profileFr = new ProfileFragment();
+        settingFr = new SettingFragment();
+
+
+        sqlDb = myDb.getReadableDatabase();
+        Cursor cur = sqlDb.rawQuery("SELECT * FROM userTB", null);
+        if(cur.getCount() > 0){
+            cur.moveToFirst();
+
+            int [] arr = {
+                    cur.getColumnIndex("userID"),
+                    cur.getColumnIndex("userName"),
+                    cur.getColumnIndex("cash"),
+                    cur.getColumnIndex("rank")
+            };
+            curUser.setId(cur.getString(arr[0]));
+            curUser.setName(cur.getString(arr[1]));
+            curUser.setCash(cur.getInt(arr[2]));
+            curUser.setRank(cur.getInt(arr[3]));
+        }
+        cur.close();
+        sqlDb.close();
 
         //서버 측 코드 받아오는 핸들러
         mainHandler = new Handler(msg -> {
-
+            try {
+                JSONObject receiveData = new JSONObject(msg.obj.toString());
+                if(msg.what == 102) {
+                    int isDeleted = Integer.parseInt(receiveData.getString("isDeleted"));
+                    if(isDeleted == 1) {
+                        signOut();                        
+                    }else{
+                        Toast.makeText(getApplicationContext(), "회원 탈퇴에 실패 했습니다.", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
             return true;
         });
 
@@ -82,7 +122,8 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     Thread.sleep(1);
                     if(cram.isConnected()) {
-                        cram.setHandler(mainHandler);
+                        cram.setDefaultHandler(mainHandler);
+                        cram.switchHandler();
                         break;
                     }
                 }catch (Exception ignored){
@@ -96,14 +137,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 drawLay.openDrawer(viewSetting);
-                getSupportFragmentManager().beginTransaction().replace(R.id.viewSetting, settingFragment).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.viewSetting, settingFr).commit();
             }
         });
 
         //오른쪽 프로필
         imgUser.setOnClickListener(v -> {
             drawLay.openDrawer(viewProf);
-            getSupportFragmentManager().beginTransaction().replace(R.id.viewProf, profileFragment).commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.viewProf, profileFr).commit();
         });
 
         btnStart.setOnClickListener(v -> {
@@ -133,22 +174,6 @@ public class MainActivity extends AppCompatActivity {
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
         mAuth = FirebaseAuth.getInstance();
-
-        sqlDb = myDb.getReadableDatabase();
-        Cursor cur = sqlDb.rawQuery("SELECT * FROM userTB", null);
-        if(cur.getCount() > 0){
-            cur.moveToFirst();
-            int n = cur.getColumnIndex("userName");
-            userName = cur.getString(n);
-            StringBuilder sb = new StringBuilder();
-            sb.append("점수 : ");
-            sb.append(1000);
-            sb.append("\n캐시 : ");
-            sb.append(1000);
-            userInfo = sb.toString();
-        }
-        cur.close();
-        sqlDb.close();
     }
 
     @Override
@@ -160,29 +185,36 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
     protected void onRestart() {
         super.onRestart();
-        if(cram != null) {
-            cram.setHandler(mainHandler);
-        }
+
         sqlDb = myDb.getReadableDatabase();
-        userName = "로그인을 해주세요.";
-        userInfo = "점수 : 0\n캐시 : 0";
+        curUser.setName("로그인을 해주세요.");
+        curUser.setRank(0);
+        curUser.setCash(0);
         Cursor cur = sqlDb.rawQuery("SELECT * FROM userTB", null);
         if(cur.getCount() > 0){
             cur.moveToFirst();
-            int n = cur.getColumnIndex("userName");
-            userName = cur.getString(n);
-            StringBuilder sb = new StringBuilder();
-            sb.append("점수 : ");
-            sb.append(1000);
-            sb.append("\n캐시 : ");
-            sb.append(1000);
-            userInfo = sb.toString();
+
+            int [] arr = {
+                    cur.getColumnIndex("userID"),
+                    cur.getColumnIndex("userName"),
+                    cur.getColumnIndex("cash"),
+                    cur.getColumnIndex("rank")
+            };
+            curUser.setId(cur.getString(arr[0]));
+            curUser.setName(cur.getString(arr[1]));
+            curUser.setCash(cur.getInt(arr[2]));
+            curUser.setRank(cur.getInt(arr[3]));
         }
         cur.close();
         sqlDb.close();
-        profileFragment = new ProfileFragment();
+        profileFr = new ProfileFragment();
     }
 
     public void signOut() {
@@ -213,13 +245,25 @@ public class MainActivity extends AppCompatActivity {
                     Log.d(TAG, "User account deleted.");
                 }
             });
-            signOut();
+            if(cram.isConnected()) {
+                try {
+                    JSONObject sendData = new JSONObject();
+                    sendData.put("what", 102);
+                    sendData.put("userID", user.getUid());
+                    sendData.put("userName", curUser.getName());
+                    cram.send(sendData.toString());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }else {
+                Toast.makeText(getApplicationContext(), "인터넷 연결을 확인해 주세요.", Toast.LENGTH_SHORT).show();
+            }
         }
+
     }
 
     // 초기 로그인 정보 확인
     private boolean checkLogin(){
-        myDb = new MyDBHelper(this);
         sqlDb = myDb.getReadableDatabase();
         Cursor cur = sqlDb.rawQuery("SELECT * FROM userTB", null);
 

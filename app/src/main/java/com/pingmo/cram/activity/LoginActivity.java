@@ -32,6 +32,9 @@ import com.pingmo.cram.Cram;
 import com.pingmo.cram.MyDBHelper;
 import com.pingmo.cram.R;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -54,6 +57,9 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+
+        myDb = new MyDBHelper(getApplicationContext());
 
         //개인정보 및 이용 약관
         TextView txtLink = (TextView) findViewById(R.id.txtLink);
@@ -96,14 +102,37 @@ public class LoginActivity extends AppCompatActivity {
         });
         loginHandler = new Handler(msg -> {
             // 아이디 확인 되면 메인 액티비티로
-            if(false) {
-                // insert into user 테이블
-            }else{
-                Intent RegisterIntent = new Intent(getApplicationContext(), RegisterActivity.class);
-                RegisterIntent.putExtra("UID", user.getUid());
-                RegisterIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                startActivity(RegisterIntent);
+            try {
+                JSONObject receiveData = new JSONObject(msg.obj.toString());
+                if(msg.what == 101) {
+                    int isUser = Integer.parseInt(receiveData.getString("isUser"));
+                    if(isUser == 1) {
+                        String userID = receiveData.getString("userID");
+                        String userName = receiveData.getString("userName");
+                        int cash = receiveData.getInt("cash");
+                        int rank = receiveData.getInt("rank");
+                        sqlDB = myDb.getWritableDatabase();
+                        sqlDB.execSQL("INSERT INTO userTB (userID, userName, cash, rank, state) VALUES"
+                                + " ('"
+                                + userID + "', '"
+                                + userName + "', "
+                                + cash + ", "
+                                + rank + ", "
+                                + 0 + ");");
+                        sqlDB.close();
+                        cram.switchHandler();
+                        finish();
+                    }else{
+                        Intent RegisterIntent = new Intent(getApplicationContext(), RegisterActivity.class);
+                        RegisterIntent.putExtra("userID", user.getUid());
+                        RegisterIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                        startActivity(RegisterIntent);
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
+
             return true;
         });
     }
@@ -155,7 +184,14 @@ public class LoginActivity extends AppCompatActivity {
                             // 서버측에 유저 정보 확인 해야댐
                             mAuth = FirebaseAuth.getInstance();
                             user = mAuth.getCurrentUser();
-                            cram.send(user.getUid());
+                            try {
+                                JSONObject sendData = new JSONObject();
+                                sendData.put("what", 101);
+                                sendData.put("userID", user.getUid());
+                                cram.send(sendData.toString());
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
                         } else {
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
                             Toast.makeText(getApplicationContext(), "Authentication Failed", Toast.LENGTH_LONG).show();

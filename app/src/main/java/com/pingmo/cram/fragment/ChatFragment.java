@@ -93,6 +93,7 @@ public class ChatFragment extends Fragment {
                             sendData.put("what", 200);
                             sendData.put("chat", editChat.getText().toString());
                             ((GameActivity) getActivity()).cram.send(sendData.toString());
+                            editChat.setText("");
                         }catch (JSONException e){
                             e.printStackTrace();
                         }
@@ -111,6 +112,7 @@ public class ChatFragment extends Fragment {
                         sendData.put("what", 200);
                         sendData.put("chat", editChat.getText().toString());
                         ((GameActivity) getActivity()).cram.send(sendData.toString());
+                        editChat.setText("");
                     }catch (JSONException e){
                         e.printStackTrace();
                     }

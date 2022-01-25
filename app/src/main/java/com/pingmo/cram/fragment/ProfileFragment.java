@@ -14,9 +14,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.pingmo.cram.R;
+import com.pingmo.cram.User;
+import com.pingmo.cram.activity.MainActivity;
 import com.pingmo.cram.adapter.RecyclerFriendAdapter;
 import com.pingmo.cram.list.RecyclerFriendList;
-import com.pingmo.cram.activity.MainActivity;
 
 import java.util.ArrayList;
 
@@ -88,11 +89,13 @@ public class ProfileFragment extends Fragment {
 
         imgUser2.setImageResource(R.drawable.help);
 
-        String userName = ((MainActivity)getActivity()).userName;
-        String userInfo = ((MainActivity)getActivity()).userInfo;
+        User curUser = ((MainActivity)getActivity()).curUser;
 
-        txtUser.setText(userName);
-        txtUserInfo.setText(userInfo);
+        txtUser.setText(curUser.getName());
+        StringBuilder sb = new StringBuilder();
+        sb.append("점수 : " + curUser.getRank() + "\n");
+        sb.append("캐시 : " + curUser.getCash());
+        txtUserInfo.setText(sb.toString());
         DrawerLayout drawLay = getActivity().findViewById(R.id.drawLay);
 
         mList = new ArrayList<>();

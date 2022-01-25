@@ -13,6 +13,7 @@ public class Cram extends Application {
 
     private static final Cram instance = new Cram();
     public ClientService service;
+    public Handler defaultHandler;
 
     private final ServiceConnection connection = new ServiceConnection() {
         @Override
@@ -45,6 +46,13 @@ public class Cram extends Application {
 
     public void setHandler(Handler handler) {
         service.setHandler(handler);
+    }
+
+    public void setDefaultHandler(Handler handler) {
+        defaultHandler = handler;
+    }
+    public void switchHandler(){
+        service.setHandler(defaultHandler);
     }
 
     public boolean isConnected() {

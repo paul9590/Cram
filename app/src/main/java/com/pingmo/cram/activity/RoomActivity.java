@@ -79,6 +79,39 @@ public class RoomActivity extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        roomHandler = new Handler(msg -> {
+            try {
+                JSONObject receiveData = new JSONObject(msg.obj.toString());
+                if(msg.what == 400) {
+                    int status = Integer.parseInt(receiveData.getString("status"));
+                    if(status == 1){
+                        Intent gameIntent = new Intent(RoomActivity.this, GameActivity.class);
+                        gameIntent.putExtra("roomName", roomName);
+                        gameIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                        startActivity(gameIntent);
+                        if(roomDialog.isShowing()) {
+                            roomDialog.dismiss();
+                        }
+                    }else{
+                        Toast.makeText(getApplicationContext(), "방 생성에 실패 했습니다.", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                if(msg.what == 403) {
+                    roomCnt += 5;
+                    JSONArray datas = receiveData.getJSONArray("detail");
+                    for(int i = 0; i < datas.length(); i++) {
+                        JSONObject data = (JSONObject) datas.get(i);
+                        boolean isLock = data.getString("roomPW").length() > 0;
+                        String roomName = data.getString("roomName");
+                        String roomInfo = data.getString("curPlayer") + "/" + data.getString("maxPlayer");
+                        addItem(isLock, roomName, roomInfo);
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return true;
+        });
 
         btnAddRoom.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -121,41 +154,6 @@ public class RoomActivity extends AppCompatActivity {
         });
         // 언젠가 지울거임
         addItem(false, "hwang", "1/8");
-
-        roomHandler = new Handler(msg -> {
-            try {
-                JSONObject receiveData = new JSONObject(msg.obj.toString());
-                if(msg.what == 400) {
-                    int status = Integer.parseInt(receiveData.getString("status"));
-                    if(status == 1){
-                        Intent gameIntent = new Intent(RoomActivity.this, GameActivity.class);
-                        gameIntent.putExtra("roomName", roomName);
-                        gameIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                        startActivity(gameIntent);
-                        if(roomDialog.isShowing()) {
-                            roomDialog.dismiss();
-                        }
-                    }else{
-                        Toast.makeText(getApplicationContext(), "방 생성에 실패 했습니다.", Toast.LENGTH_SHORT).show();
-                    }
-                }
-                if(msg.what == 403) {
-                    roomCnt += 5;
-                    JSONArray datas = receiveData.getJSONArray("detail");
-                    for(int i = 0; i < datas.length(); i++) {
-                        JSONObject data = (JSONObject) datas.get(i);
-                        boolean isLock = data.getString("roomPW").length() > 0;
-                        String roomName = data.getString("roomName");
-                        String roomInfo = data.getString("curPlayer") + "/" + data.getString("maxPlayer");
-                        addItem(isLock, roomName, roomInfo);
-                    }
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return true;
-        });
-
     }
 
     @Override
@@ -174,6 +172,12 @@ public class RoomActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         overridePendingTransition(0,0);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        cram.switchHandler();
     }
 
     private void addItem(Boolean isLock, String roomName, String roomInfo) {
