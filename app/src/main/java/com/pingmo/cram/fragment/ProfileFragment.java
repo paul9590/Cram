@@ -32,6 +32,10 @@ public class ProfileFragment extends Fragment {
     RecyclerFriendAdapter mAdapter = null;
     ArrayList<RecyclerFriendList> mList;
 
+    ImageView imgUser2;
+    TextView txtUser;
+    TextView txtUserInfo;
+
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -80,22 +84,19 @@ public class ProfileFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_profile, container, false);
         mRecyclerView = rootView.findViewById(R.id.viewFriend);
 
-        ImageView imgUser2 = rootView.findViewById(R.id.imgUser2);
+        imgUser2 = rootView.findViewById(R.id.imgUser2);
 
-        TextView txtUser = rootView.findViewById(R.id.txtUser);
-        TextView txtUserInfo = rootView.findViewById(R.id.txtUserInfo);
+        txtUser = rootView.findViewById(R.id.txtUser);
+        txtUserInfo = rootView.findViewById(R.id.txtUserInfo);
 
         Button btnLogOut = rootView.findViewById(R.id.btnLogOut);
 
         imgUser2.setImageResource(R.drawable.help);
 
-        User curUser = ((MainActivity)getActivity()).curUser;
 
-        txtUser.setText(curUser.getName());
-        StringBuilder sb = new StringBuilder();
-        sb.append("점수 : " + curUser.getRank() + "\n");
-        sb.append("캐시 : " + curUser.getCash());
-        txtUserInfo.setText(sb.toString());
+        User curUser = ((MainActivity)getActivity()).curUser;
+        setProfile(curUser);
+
         DrawerLayout drawLay = getActivity().findViewById(R.id.drawLay);
 
         mList = new ArrayList<>();
@@ -140,5 +141,13 @@ public class ProfileFragment extends Fragment {
         item.setOnline(isOnline);
         item.setName(name);
         mList.add(item);
+    }
+
+    public void setProfile(User curUser) {
+        txtUser.setText(curUser.getName());
+        StringBuilder sb = new StringBuilder();
+        sb.append("점수 : " + curUser.getRank() + "\n");
+        sb.append("캐시 : " + curUser.getCash());
+        txtUserInfo.setText(sb.toString());
     }
 }

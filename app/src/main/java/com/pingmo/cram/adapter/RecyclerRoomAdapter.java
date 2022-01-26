@@ -147,18 +147,20 @@ public class RecyclerRoomAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     int pos = getAdapterPosition();
                     if(pos != RecyclerView.NO_POSITION) {
                         RecyclerRoomList item = mData.get(pos);
-                        String [] tmp  = item.getRoomInfo().split("/");
+                        String[] tmp = item.getRoomInfo().split("/");
 
                         // 만약 꽉 차 있지 않다면
-                        if (!tmp[0].equals(tmp[1])) {
-                            if(item.getImgLock()){
+                        if (tmp[0].equals(tmp[1])) {
+                            Toast.makeText(context, "방이 가득 차 있습니다.", Toast.LENGTH_SHORT).show();
+                        } else {
+                            if (item.getImgLock()) {
                                 //비밀번호가 있다면
                                 enterRoomDialog = new Dialog(context);
                                 enterRoomDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                                 enterRoomDialog.setContentView(R.layout.dial_enterroom);
                                 enterRoomDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                                 enterRoomDial(item);
-                            }else {
+                            } else {
                                 try {
                                     JSONObject sendData = new JSONObject();
                                     sendData.put("what", 401);

@@ -15,8 +15,7 @@ public class MyDBHelper extends SQLiteOpenHelper {
         db.execSQL("CREATE TABLE userTB (userID varchar(40) NOT NULL," +
                     "userName varchar(20) PRIMARY KEY , " +
                     "cash Integer, " +
-                    "rank Integer, " +
-                    "state Integer);");
+                    "rank Integer);");
 
         db.execSQL("CREATE TABLE shopTB(itemCode Integer PRIMARY KEY DEFAULT 0, " +
                     "itemName varchar(30), " +

@@ -29,8 +29,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.HashMap;
-
 public class GameActivity extends AppCompatActivity {
     public MyDBHelper myDb;
     public SQLiteDatabase sqlDb;
@@ -47,9 +45,10 @@ public class GameActivity extends AppCompatActivity {
 
     TextView txtGameTitle;
 
-    HashMap<Integer, String> gamer = new HashMap<>();
     String [] players;
     TextView[] txtPlayer;
+
+    int gamer = 0;
 
     int[] playerImg;
     ImageView[] imgPlayer;
@@ -67,7 +66,6 @@ public class GameActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
-
 
         myDb = new MyDBHelper(this);
         sqlDb = myDb.getReadableDatabase();
@@ -122,12 +120,7 @@ public class GameActivity extends AppCompatActivity {
         playerImg = new int[]{R.drawable.userimg, R.drawable.userimg, R.drawable.userimg, R.drawable.userimg,
                     R.drawable.userimg, R.drawable.userimg, R.drawable.userimg, R.drawable.userimg};
 
-        for(int i = 0; i < players.length; i++) {
-            txtPlayer[i].setText(players[i]);
-            imgPlayer[i].setImageResource(playerImg[i]);
-            imgPlayer[i].setTag("Player");
-            gamer.put(i, players[i]);
-        }
+        setGamer();
 
         for(int i = 0; i < imgPlayer.length; i++) {
             imgPlayer[i].setTag("UnLocked");
@@ -141,7 +134,7 @@ public class GameActivity extends AppCompatActivity {
                     if(players[num].equals("") && isHost){
                         gamePlayerDialog.setContentView(R.layout.dial_player2);
                         gamePlayerDial2(num);
-                    }else if(players[num].length() > 0){
+                    }else if(!players[num].equals("")){
                         gamePlayerDialog.setContentView(R.layout.dial_player);
                         gamePlayerDial(num);
                     }
@@ -151,7 +144,8 @@ public class GameActivity extends AppCompatActivity {
         rollHandler = new Handler(new Handler.Callback() {
 
             int cnt = 0;
-            final int max = gamer.size() * 2;
+            int max = gamer * 2;
+
             int loser = 0;
 
             @Override
@@ -181,8 +175,6 @@ public class GameActivity extends AppCompatActivity {
                 return true;
             }
         });
-
-
 
         gameHandler = new Handler(msg -> {
             try {
@@ -217,12 +209,7 @@ public class GameActivity extends AppCompatActivity {
                         players[i] = player.getString(Integer.toString(i + 1));
                     }
                     txtGameTitle.setText("" + roomNum1 + ". " + roomName1 + " (" + roomInfo1 + ")");
-                    for(int i = 0; i < players.length; i++) {
-                        txtPlayer[i].setText(players[i]);
-                        imgPlayer[i].setImageResource(playerImg[i]);
-                        imgPlayer[i].setTag("Player");
-                        gamer.put(i, players[i]);
-                    }
+                    setGamer();
                 }
 
                 if(msg.what == 402) {
@@ -253,12 +240,23 @@ public class GameActivity extends AppCompatActivity {
                 while(true) {
                     try {
                         if(isRolling) {
-                                for (int i = 0; i < players.length; i++) {
+                            for(int i = 0; i < players.length; i++) {
+                                if(players[i].equals("Locked") || players[i].equals("")){
+
+                                }else{
+                                    gamer++;
+                                }
+                            }
+                            for (int i = 0; i < players.length; i++) {
+                                if(players[i].equals("Locked") || players[i].equals("")){
+
+                                }else {
                                     Message msg = new Message();
                                     msg.obj = i;
                                     rollHandler.sendMessage(msg);
                                     Thread.sleep(200);
                                 }
+                            }
                         }
                     } catch (InterruptedException e) {
                             e.printStackTrace();
@@ -277,6 +275,7 @@ public class GameActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        /*
         if(cram.isConnected()) {
             try {
                 JSONObject sendData = new JSONObject();
@@ -288,6 +287,8 @@ public class GameActivity extends AppCompatActivity {
         }else {
             Toast.makeText(getApplicationContext(), "인터넷 연결을 확인해 주세요.", Toast.LENGTH_SHORT).show();
         }
+        
+         */
     }
 
     @Override
@@ -354,6 +355,7 @@ public class GameActivity extends AppCompatActivity {
             }
         });
     }
+
     public void gamePlayerDial(int num){
         gamePlayerDialog.show();
         TextView txtPlayerDial = gamePlayerDialog.findViewById(R.id.txtPlayerDial);
@@ -377,7 +379,6 @@ public class GameActivity extends AppCompatActivity {
             imgPlayer[num].setImageResource(R.drawable.layoutshape);
             imgPlayer[num].setTag("UnLocked");
             txtPlayer[num].setText("");
-            gamer.remove(num);
             gamePlayerDialog.dismiss();
         });
 
@@ -404,26 +405,49 @@ public class GameActivity extends AppCompatActivity {
 
         btnAddBot.setOnClickListener(v -> {
             // 서버 봇 추가
-            imgPlayer[num].setImageResource(R.drawable.ic_launcher_background);
+            imgPlayer[num].setImageResource(R.drawable.bot);
             imgPlayer[num].setTag("Bot");
             txtPlayer[num].setText("Bot" + (num + 1));
-            gamer.put(num, "Bot");
             gamePlayerDialog.dismiss();
-
         });
+
         btnPlayerLock.setOnClickListener(v -> {
             // 이미지 바꾸고 서버 측 숫자 수정
             if(btnPlayerLock.getText().toString().equals("잠그기")) {
-                imgPlayer[num].setImageResource(R.drawable.ic_launcher_foreground);
+                imgPlayer[num].setImageResource(R.drawable.locked);
                 imgPlayer[num].setTag("Locked");
             }else{
                 imgPlayer[num].setImageResource(R.drawable.layoutshape);
                 imgPlayer[num].setTag("UnLocked");
             }
             txtPlayer[num].setText("");
-            gamer.remove(num);
+
             gamePlayerDialog.dismiss();
         });
         btnPlayerEixt2.setOnClickListener(v -> gamePlayerDialog.dismiss());
+    }
+
+    // 유저 설정
+    public void setGamer(){
+        for(int i = 0; i < players.length; i++) {
+            Toast.makeText(getApplicationContext(), "" + players[i] + " " + players.length, Toast.LENGTH_SHORT).show();
+            if(players[i].equals("Bot")){
+                txtPlayer[i].setText("Bot" + (i + 1));
+                imgPlayer[i].setImageResource(R.drawable.bot);
+                imgPlayer[i].setTag("Bot");
+            }else if(players[i].equals("Locked")){
+                txtPlayer[i].setText("");
+                imgPlayer[i].setImageResource(R.drawable.locked);
+                imgPlayer[i].setTag("Locked");
+            }else if(players[i].equals("")){
+                txtPlayer[i].setText("");
+                imgPlayer[i].setImageResource(R.drawable.layoutshape);
+                imgPlayer[i].setTag("UnLocked");
+            } else {
+                txtPlayer[i].setText(players[i]);
+                imgPlayer[i].setImageResource(playerImg[i]);
+                imgPlayer[i].setTag("Player");
+            }
+        }
     }
 }

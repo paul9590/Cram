@@ -77,30 +77,28 @@ public class MainActivity extends AppCompatActivity {
         profileFr = new ProfileFragment();
         settingFr = new SettingFragment();
 
-
-        sqlDb = myDb.getReadableDatabase();
-        Cursor cur = sqlDb.rawQuery("SELECT * FROM userTB", null);
-        if(cur.getCount() > 0){
-            cur.moveToFirst();
-
-            int [] arr = {
-                    cur.getColumnIndex("userID"),
-                    cur.getColumnIndex("userName"),
-                    cur.getColumnIndex("cash"),
-                    cur.getColumnIndex("rank")
-            };
-            curUser.setId(cur.getString(arr[0]));
-            curUser.setName(cur.getString(arr[1]));
-            curUser.setCash(cur.getInt(arr[2]));
-            curUser.setRank(cur.getInt(arr[3]));
-        }
-        cur.close();
-        sqlDb.close();
-
         //서버 측 코드 받아오는 핸들러
         mainHandler = new Handler(msg -> {
             try {
                 JSONObject receiveData = new JSONObject(msg.obj.toString());
+                if(msg.what == 101) {
+                    int isUser = Integer.parseInt(receiveData.getString("isUser"));
+                    if(isUser == 1) {
+                        String userID = receiveData.getString("userID");
+                        String userName = receiveData.getString("userName");
+                        int cash = receiveData.getInt("cash");
+                        int rank = receiveData.getInt("rank");
+                        sqlDb = myDb.getWritableDatabase();
+                        sqlDb.execSQL("UPDATE userTB SET "
+                                + "userID = '" + userID
+                                + "', userName = '" + userName
+                                + "', cash = " + cash
+                                + ", rank = " + rank
+                                + " WHERE userID = '" + curUser.getId()
+                                + "';");
+                        sqlDb.close();
+                    }
+                }
                 if(msg.what == 102) {
                     int isDeleted = Integer.parseInt(receiveData.getString("isDeleted"));
                     if(isDeleted == 1) {
@@ -114,22 +112,6 @@ public class MainActivity extends AppCompatActivity {
             }
             return true;
         });
-
-        // 초기 핸들러 설정
-        readThread = new Thread(() -> {
-            while (true) {
-                try {
-                    Thread.sleep(1);
-                    if(cram.isConnected()) {
-                        cram.setDefaultHandler(mainHandler);
-                        cram.switchHandler();
-                        break;
-                    }
-                }catch (Exception ignored){
-                }
-            }
-        });
-        readThread.start();
 
         //왼쪽 햄버거
         imbSetting.setOnClickListener(new View.OnClickListener() {
@@ -189,13 +171,59 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+
+        // 초기 핸들러 설정
+        readThread = new Thread(() -> {
+            while (true) {
+                try {
+                    Thread.sleep(1);
+                    if(cram.isConnected()) {
+                        cram.setHandler(mainHandler);
+
+                        sqlDb = myDb.getReadableDatabase();
+                        Cursor cur = sqlDb.rawQuery("SELECT * FROM userTB", null);
+                        if(cur.getCount() > 0){
+                            cur.moveToFirst();
+
+                            int [] arr = {
+                                    cur.getColumnIndex("userID"),
+                                    cur.getColumnIndex("userName"),
+                                    cur.getColumnIndex("cash"),
+                                    cur.getColumnIndex("rank")
+                            };
+                            curUser.setId(cur.getString(arr[0]));
+                            curUser.setName(cur.getString(arr[1]));
+                            curUser.setCash(cur.getInt(arr[2]));
+                            curUser.setRank(cur.getInt(arr[3]));
+
+                            try {
+                                JSONObject sendData = new JSONObject();
+                                sendData.put("what", 101);
+                                sendData.put("userID", curUser.getId());
+                                cram.send(sendData.toString());
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        cur.close();
+                        sqlDb.close();
+                        break;
+                    }
+                }catch (Exception ignored){
+                }
+            }
+        });
+        readThread.start();
+    }
+
+    @Override
     protected void onRestart() {
         super.onRestart();
 
         sqlDb = myDb.getReadableDatabase();
-        curUser.setName("로그인을 해주세요.");
-        curUser.setRank(0);
-        curUser.setCash(0);
         Cursor cur = sqlDb.rawQuery("SELECT * FROM userTB", null);
         if(cur.getCount() > 0){
             cur.moveToFirst();
@@ -210,10 +238,15 @@ public class MainActivity extends AppCompatActivity {
             curUser.setName(cur.getString(arr[1]));
             curUser.setCash(cur.getInt(arr[2]));
             curUser.setRank(cur.getInt(arr[3]));
+        }else {
+            curUser.setName("로그인을 해주세요.");
+            curUser.setRank(0);
+            curUser.setCash(0);
         }
         cur.close();
         sqlDb.close();
-        profileFr = new ProfileFragment();
+        profileFr.setProfile(curUser);
+
     }
 
     public void signOut() {

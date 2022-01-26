@@ -112,15 +112,13 @@ public class LoginActivity extends AppCompatActivity {
                         int cash = receiveData.getInt("cash");
                         int rank = receiveData.getInt("rank");
                         sqlDB = myDb.getWritableDatabase();
-                        sqlDB.execSQL("INSERT INTO userTB (userID, userName, cash, rank, state) VALUES"
+                        sqlDB.execSQL("INSERT INTO userTB (userID, userName, cash, rank) VALUES"
                                 + " ('"
                                 + userID + "', '"
                                 + userName + "', "
                                 + cash + ", "
-                                + rank + ", "
-                                + 0 + ");");
+                                + rank + ");");
                         sqlDB.close();
-                        cram.switchHandler();
                         finish();
                     }else{
                         Intent RegisterIntent = new Intent(getApplicationContext(), RegisterActivity.class);

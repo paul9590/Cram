@@ -48,13 +48,6 @@ public class Cram extends Application {
         service.setHandler(handler);
     }
 
-    public void setDefaultHandler(Handler handler) {
-        defaultHandler = handler;
-    }
-    public void switchHandler(){
-        service.setHandler(defaultHandler);
-    }
-
     public boolean isConnected() {
         return service.isConnected();
     }

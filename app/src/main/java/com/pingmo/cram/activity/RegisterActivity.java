@@ -89,15 +89,13 @@ public class RegisterActivity extends AppCompatActivity {
                     int isValidate = Integer.parseInt(receiveData.getString("isValidate"));
                     if(isValidate == 1) {
                         sqlDB = myDb.getWritableDatabase();
-                        sqlDB.execSQL("INSERT INTO userTB (userID, userName, cash, rank, state) VALUES"
+                        sqlDB.execSQL("INSERT INTO userTB (userID, userName, cash, rank) VALUES"
                                 + " ('"
                                 + userID + "', '"
                                 + userName + "', "
                                 + 0 + ", "
-                                + 0 + ", "
                                 + 0 + ");");
                         sqlDB.close();
-                        cram.switchHandler();
                         finish();
                     }else{
                         Toast.makeText(getApplicationContext(), "이미 사용 중인 이름입니다.", Toast.LENGTH_SHORT).show();
