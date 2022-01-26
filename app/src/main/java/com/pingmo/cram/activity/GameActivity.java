@@ -132,7 +132,9 @@ public class GameActivity extends AppCompatActivity {
                     gamePlayerDialog = new Dialog(GameActivity.this);
                     gamePlayerDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                     gamePlayerDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                    if((players[num].equals("Locked") || players[num].equals("Bot"))
+                    if(userNum == num){
+
+                    }else if((players[num].equals("Locked") || players[num].equals("Bot") || players[num].equals(""))
                             && isHost){
                         gamePlayerDialog.setContentView(R.layout.dial_player2);
                         gamePlayerDial2(num);
@@ -440,6 +442,12 @@ public class GameActivity extends AppCompatActivity {
             // 서버 봇 추가
             if(cram.isConnected()) {
                 try {
+                    if (players[num].equals("Locked")) {
+                        JSONObject sendData2 = new JSONObject();
+                        sendData2.put("what", 405);
+                        sendData2.put("lockNum", Integer.toString(num));
+                        cram.send(sendData2.toString());
+                    }
                     JSONObject sendData = new JSONObject();
                     sendData.put("what", 406);
                     sendData.put("botNum", Integer.toString(num));
@@ -458,7 +466,13 @@ public class GameActivity extends AppCompatActivity {
             try {
                 if (cram.isConnected()) {
                     JSONObject sendData = new JSONObject();
-                    if (btnPlayerLock.getText().toString().equals("잠그기")) {
+                    if (!players[num].equals("Locked")) {
+                        if(players[num].equals("Bot")){
+                            JSONObject sendData2 = new JSONObject();
+                            sendData2.put("what", 407);
+                            sendData2.put("botNum", Integer.toString(num));
+                            cram.send(sendData2.toString());
+                        }
                         sendData.put("what", 404);
                     }else {
                         sendData.put("what", 405);
@@ -481,7 +495,6 @@ public class GameActivity extends AppCompatActivity {
     // 유저 설정
     public void setGamer(){
         for(int i = 0; i < players.length; i++) {
-            Toast.makeText(getApplicationContext(), "" + players[i], Toast.LENGTH_SHORT).show();
             if(players[i].equals(userName)){
                 userNum = i;
             }
