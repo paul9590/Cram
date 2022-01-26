@@ -32,7 +32,6 @@ import org.json.JSONObject;
 public class GameActivity extends AppCompatActivity {
     public MyDBHelper myDb;
     public SQLiteDatabase sqlDb;
-    public String userName;
     
     public Cram cram = Cram.getInstance();
     Handler gameHandler;
@@ -47,6 +46,9 @@ public class GameActivity extends AppCompatActivity {
 
     String [] players;
     TextView[] txtPlayer;
+
+    String userName;
+    int userNum;
 
     int gamer = 0;
 
@@ -123,7 +125,6 @@ public class GameActivity extends AppCompatActivity {
         setGamer();
 
         for(int i = 0; i < imgPlayer.length; i++) {
-            imgPlayer[i].setTag("UnLocked");
             int num = i;
 
             imgPlayer[i].setOnClickListener(v -> {
@@ -131,10 +132,11 @@ public class GameActivity extends AppCompatActivity {
                     gamePlayerDialog = new Dialog(GameActivity.this);
                     gamePlayerDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                     gamePlayerDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                    if(players[num].equals("") && isHost){
+                    if((players[num].equals("Locked") || players[num].equals("Bot"))
+                            && isHost){
                         gamePlayerDialog.setContentView(R.layout.dial_player2);
                         gamePlayerDial2(num);
-                    }else if(!players[num].equals("")){
+                    }else if(!txtPlayer[num].getText().toString().equals("")){
                         gamePlayerDialog.setContentView(R.layout.dial_player);
                         gamePlayerDial(num);
                     }
@@ -144,13 +146,12 @@ public class GameActivity extends AppCompatActivity {
         rollHandler = new Handler(new Handler.Callback() {
 
             int cnt = 0;
-            int max = gamer * 2;
-
             int loser = 0;
 
             @Override
             public boolean handleMessage(Message msg) {
                 int n = (int) msg.obj;
+                int max = gamer * 2;
                 cnt++;
                 int fin = max + loser;
                 if(cnt > fin){
@@ -206,7 +207,7 @@ public class GameActivity extends AppCompatActivity {
                     players = new String[pData.length()];
                     for(int i = 0; i < pData.length(); i++){
                         JSONObject player = (JSONObject) pData.get(i);
-                        players[i] = player.getString(Integer.toString(i + 1));
+                        players[i] = player.getString("player");
                     }
                     txtGameTitle.setText("" + roomNum1 + ". " + roomName1 + " (" + roomInfo1 + ")");
                     setGamer();
@@ -216,6 +217,24 @@ public class GameActivity extends AppCompatActivity {
                     // 방 나가기
                     finish();
                 }
+                if(msg.what == 408){
+                    // 추방
+                    int kickNum = Integer.parseInt(receiveData.getString("kickNum"));
+                    if(userNum == kickNum){
+                        if(cram.isConnected()) {
+                            try {
+                                JSONObject sendData = new JSONObject();
+                                sendData.put("what", 402);
+                                cram.send(sendData.toString());
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }else {
+                            Toast.makeText(getApplicationContext(), "인터넷 연결을 확인해 주세요.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -240,17 +259,18 @@ public class GameActivity extends AppCompatActivity {
                 while(true) {
                     try {
                         if(isRolling) {
+                            gamer = 0;
                             for(int i = 0; i < players.length; i++) {
-                                if(players[i].equals("Locked") || players[i].equals("")){
+                                if(players[i].equals("") || players[i].equals("Locked")){
 
                                 }else{
                                     gamer++;
                                 }
                             }
                             for (int i = 0; i < players.length; i++) {
-                                if(players[i].equals("Locked") || players[i].equals("")){
+                                if(players[i].equals("") || players[i].equals("Locked")){
 
-                                }else {
+                                }else{
                                     Message msg = new Message();
                                     msg.obj = i;
                                     rollHandler.sendMessage(msg);
@@ -264,18 +284,18 @@ public class GameActivity extends AppCompatActivity {
                 }
             }
         };
+
+        rollThread.start();
     }
     @Override
     public void onStart() {
         super.onStart();
         cram.setHandler(gameHandler);
-        rollThread.start();
     }
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        /*
+
         if(cram.isConnected()) {
             try {
                 JSONObject sendData = new JSONObject();
@@ -287,8 +307,6 @@ public class GameActivity extends AppCompatActivity {
         }else {
             Toast.makeText(getApplicationContext(), "인터넷 연결을 확인해 주세요.", Toast.LENGTH_SHORT).show();
         }
-        
-         */
     }
 
     @Override
@@ -376,9 +394,24 @@ public class GameActivity extends AppCompatActivity {
 
         btnPlayerKick.setOnClickListener(v -> {
             //서버 측 강퇴
-            imgPlayer[num].setImageResource(R.drawable.layoutshape);
-            imgPlayer[num].setTag("UnLocked");
-            txtPlayer[num].setText("");
+            if(cram.isConnected()) {
+                try {
+                    JSONObject sendData = new JSONObject();
+                    if (players[num].equals("Bot")) {
+                        sendData.put("what", 407);
+                        sendData.put("botNum", Integer.toString(num));
+                    } else {
+                        sendData.put("what", 408);
+                        sendData.put("kickNum", Integer.toString(num));
+                    }
+                    cram.send(sendData.toString());
+                }catch (JSONException e){
+                    e.printStackTrace();
+                }
+
+            }else {
+                Toast.makeText(getApplicationContext(), "인터넷 연결을 확인해 주세요.", Toast.LENGTH_SHORT).show();
+            }
             gamePlayerDialog.dismiss();
         });
 
@@ -393,32 +426,50 @@ public class GameActivity extends AppCompatActivity {
 
         txtPlayerDial2.setText("" + (num + 1) + "번 플레이어 자리를 어떻게 할까요?");
 
-        if(imgPlayer[num].getTag().equals("Bot")){
+        if(players[num].equals("Bot")){
             btnAddBot.setVisibility(View.INVISIBLE);
         }else{
             btnAddBot.setVisibility(View.VISIBLE);
         }
 
-        if(imgPlayer[num].getTag().equals("Locked")){
+        if(players[num].equals("Locked")){
             btnPlayerLock.setText("풀기");
         }
 
         btnAddBot.setOnClickListener(v -> {
             // 서버 봇 추가
-            imgPlayer[num].setImageResource(R.drawable.bot);
-            imgPlayer[num].setTag("Bot");
-            txtPlayer[num].setText("Bot" + (num + 1));
+            if(cram.isConnected()) {
+                try {
+                    JSONObject sendData = new JSONObject();
+                    sendData.put("what", 406);
+                    sendData.put("botNum", Integer.toString(num));
+                    cram.send(sendData.toString());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }else {
+                Toast.makeText(getApplicationContext(), "인터넷 연결을 확인해 주세요.", Toast.LENGTH_SHORT).show();
+            }
             gamePlayerDialog.dismiss();
         });
 
         btnPlayerLock.setOnClickListener(v -> {
-            // 이미지 바꾸고 서버 측 숫자 수정
-            if(btnPlayerLock.getText().toString().equals("잠그기")) {
-                imgPlayer[num].setImageResource(R.drawable.locked);
-                imgPlayer[num].setTag("Locked");
-            }else{
-                imgPlayer[num].setImageResource(R.drawable.layoutshape);
-                imgPlayer[num].setTag("UnLocked");
+            // 방 잠그기
+            try {
+                if (cram.isConnected()) {
+                    JSONObject sendData = new JSONObject();
+                    if (btnPlayerLock.getText().toString().equals("잠그기")) {
+                        sendData.put("what", 404);
+                    }else {
+                        sendData.put("what", 405);
+                    }
+                    sendData.put("lockNum", Integer.toString(num));
+                    cram.send(sendData.toString());
+                } else {
+                        Toast.makeText(getApplicationContext(), "인터넷 연결을 확인해 주세요.", Toast.LENGTH_SHORT).show();
+                }
+            }catch (JSONException e){
+                    e.printStackTrace();
             }
             txtPlayer[num].setText("");
 
@@ -430,23 +481,23 @@ public class GameActivity extends AppCompatActivity {
     // 유저 설정
     public void setGamer(){
         for(int i = 0; i < players.length; i++) {
-            Toast.makeText(getApplicationContext(), "" + players[i] + " " + players.length, Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "" + players[i], Toast.LENGTH_SHORT).show();
+            if(players[i].equals(userName)){
+                userNum = i;
+            }
+
             if(players[i].equals("Bot")){
                 txtPlayer[i].setText("Bot" + (i + 1));
                 imgPlayer[i].setImageResource(R.drawable.bot);
-                imgPlayer[i].setTag("Bot");
             }else if(players[i].equals("Locked")){
                 txtPlayer[i].setText("");
                 imgPlayer[i].setImageResource(R.drawable.locked);
-                imgPlayer[i].setTag("Locked");
             }else if(players[i].equals("")){
                 txtPlayer[i].setText("");
                 imgPlayer[i].setImageResource(R.drawable.layoutshape);
-                imgPlayer[i].setTag("UnLocked");
             } else {
                 txtPlayer[i].setText(players[i]);
                 imgPlayer[i].setImageResource(playerImg[i]);
-                imgPlayer[i].setTag("Player");
             }
         }
     }

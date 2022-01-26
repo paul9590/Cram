@@ -164,14 +164,15 @@ public class RoomActivity extends AppCompatActivity {
                             }catch (JSONException e){
 
                             }
-                            mAdapter.notifyDataSetChanged();
-                            Collections.sort(mList, new Comparator<RecyclerRoomList>() {
-                                @Override
-                                public int compare(RecyclerRoomList o1, RecyclerRoomList o2) {
-                                    // 1 - 2 이 방에 사람이 적은 순서
-                                    return o1.getRoomInfo().compareTo(o2.getRoomInfo());
-                                }
-                            });
+                            if(mList.size() > 0) {
+                                Collections.sort(mList, new Comparator<RecyclerRoomList>() {
+                                    @Override
+                                    public int compare(RecyclerRoomList o1, RecyclerRoomList o2) {
+                                        // 1 - 2 이 방에 사람이 적은 순서
+                                        return o1.getRoomInfo().compareTo(o2.getRoomInfo());
+                                    }
+                                });
+                            }
                             mAdapter.notifyDataSetChanged();
                             isLoading = false;
                         }
@@ -230,17 +231,6 @@ public class RoomActivity extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
-        cram.setHandler(roomHandler);
-        if(cram.isConnected()) {
-            cram.send(requestRoom.toString());
-        }else{
-            Toast.makeText(getApplicationContext(), "인터넷 연결을 확인해 주세요.", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    @Override
-    protected void onRestart() {
-        super.onRestart();
         cram.setHandler(roomHandler);
         if(cram.isConnected()) {
             cram.send(requestRoom.toString());
@@ -361,7 +351,7 @@ public class RoomActivity extends AppCompatActivity {
                         sendData.put("what", 400);
                         sendData.put("roomName", roomName);
                         sendData.put("maxPlayer", txtRoomMax.getText().toString());
-                        if(chkRoomLock.isChecked()) {
+                        if(!chkRoomLock.isChecked()) {
                             roomPW = "";
                         }
                         sendData.put("roomPW", roomPW);

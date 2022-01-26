@@ -81,7 +81,6 @@ public class ChatFragment extends Fragment {
         EditText editChat = rootView.findViewById(R.id.editChat);
         Button btnChatSend = (Button) rootView.findViewById(R.id.btnChatSend);
         mRecyclerView = rootView.findViewById(R.id.viewChat);
-        String format = "c&" + ((GameActivity)getActivity()).userName + " : ";
 
         editChat.setOnKeyListener(new View.OnKeyListener() {
             @Override
