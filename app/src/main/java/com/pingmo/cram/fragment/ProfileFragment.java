@@ -147,19 +147,23 @@ public class ProfileFragment extends Fragment {
     }
 
     public void setProfile() {
-        User curUser = cram.getUser(getActivity());;
-        txtUser.setText("" + curUser.getName());
-        StringBuilder sb = new StringBuilder();
-        sb.append("점수 : " + curUser.getRank() + "\n");
-        sb.append("캐시 : " + curUser.getCash());
-        txtUserInfo.setText(sb.toString());
+        if(getActivity() != null) {
+            User curUser = cram.getUser(getActivity());
+            txtUser.setText("" + curUser.getName());
+            StringBuilder sb = new StringBuilder();
+            sb.append("점수 : " + curUser.getRank() + "\n");
+            sb.append("캐시 : " + curUser.getCash());
+            txtUserInfo.setText(sb.toString());
+        }
     }
 
     public void setLogOut() {
-        if(cram.isUser(getActivity())){
-            btnLogOut.setVisibility(View.VISIBLE);
-        }else{
-            btnLogOut.setVisibility(View.INVISIBLE);
+        if(getActivity() != null) {
+            if (cram.isUser(getActivity())) {
+                btnLogOut.setVisibility(View.VISIBLE);
+            } else {
+                btnLogOut.setVisibility(View.INVISIBLE);
+            }
         }
     }
 }

@@ -138,10 +138,12 @@ public class SettingFragment extends Fragment {
         });
     }
     public void setQuit(){
-        if(cram.isUser(getActivity())){
-           btnQuit.setVisibility(View.VISIBLE);
-        }else{
-            btnQuit.setVisibility(View.INVISIBLE);
+        if(getActivity() != null) {
+            if (cram.isUser(getActivity())) {
+                btnQuit.setVisibility(View.VISIBLE);
+            } else {
+                btnQuit.setVisibility(View.INVISIBLE);
+            }
         }
     }
 }

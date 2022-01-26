@@ -95,7 +95,7 @@ public class RoomActivity extends AppCompatActivity {
                         String [] players = new String[pData.length()];
                         for(int i = 0; i < pData.length(); i++){
                             JSONObject player = (JSONObject) pData.get(i);
-                            players[i] = player.getString(Integer.toString(i + 1));
+                            players[i] = player.getString("player");
                         }
 
                         gameIntent.putExtra("isLock", isLock);
@@ -122,7 +122,7 @@ public class RoomActivity extends AppCompatActivity {
                         String [] players = new String[pData.length()];
                         for(int i = 0; i < pData.length(); i++){
                             JSONObject player = (JSONObject) pData.get(i);
-                            players[i] = player.getString(Integer.toString(i + 1));
+                            players[i] = player.getString("player");
                         }
 
                         gameIntent.putExtra("isLock", isLock);
