@@ -41,8 +41,8 @@ public class MainActivity extends AppCompatActivity {
     public MyDBHelper myDb;
     public SQLiteDatabase sqlDb;
 
-    ProfileFragment profileFr;
-    SettingFragment settingFr;
+    ProfileFragment profileFr = new ProfileFragment();
+    SettingFragment settingFr = new SettingFragment();
 
     public User curUser = new User();
     
@@ -70,20 +70,16 @@ public class MainActivity extends AppCompatActivity {
         ConstraintLayout viewSetting = (ConstraintLayout) findViewById(R.id.viewSetting);
 
         // 유저 정보
-        curUser.setName("로그인을 해주세요.");
-        curUser.setRank(0);
-        curUser.setCash(0);
 
-        profileFr = new ProfileFragment();
-        settingFr = new SettingFragment();
+        curUser = cram.getUser(this);
 
         //서버 측 코드 받아오는 핸들러
         mainHandler = new Handler(msg -> {
             try {
                 JSONObject receiveData = new JSONObject(msg.obj.toString());
-                if(msg.what == 101) {
-                    int isUser = Integer.parseInt(receiveData.getString("isUser"));
-                    if(isUser == 1) {
+                if(msg.what == 103) {
+                    boolean isUser = Integer.parseInt(receiveData.getString("isUser")) > 0;
+                    if(isUser) {
                         String userID = receiveData.getString("userID");
                         String userName = receiveData.getString("userName");
                         int cash = receiveData.getInt("cash");
@@ -98,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
                                 + "';");
                         sqlDb.close();
                     }
+
                 }
                 if(msg.what == 102) {
                     int isDeleted = Integer.parseInt(receiveData.getString("isDeleted"));
@@ -117,19 +114,20 @@ public class MainActivity extends AppCompatActivity {
         imbSetting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                drawLay.openDrawer(viewSetting);
                 getSupportFragmentManager().beginTransaction().replace(R.id.viewSetting, settingFr).commit();
+                drawLay.openDrawer(viewSetting);
             }
         });
 
         //오른쪽 프로필
+
         imgUser.setOnClickListener(v -> {
-            drawLay.openDrawer(viewProf);
             getSupportFragmentManager().beginTransaction().replace(R.id.viewProf, profileFr).commit();
+            drawLay.openDrawer(viewProf);
         });
 
         btnStart.setOnClickListener(v -> {
-            if(checkLogin()) {
+            if(cram.isUser(this)) {
                 Intent roomIntent = new Intent(getApplicationContext(), RoomActivity.class);
                 roomIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 startActivity(roomIntent);
@@ -186,22 +184,11 @@ public class MainActivity extends AppCompatActivity {
                         Cursor cur = sqlDb.rawQuery("SELECT * FROM userTB", null);
                         if(cur.getCount() > 0){
                             cur.moveToFirst();
-
-                            int [] arr = {
-                                    cur.getColumnIndex("userID"),
-                                    cur.getColumnIndex("userName"),
-                                    cur.getColumnIndex("cash"),
-                                    cur.getColumnIndex("rank")
-                            };
-                            curUser.setId(cur.getString(arr[0]));
-                            curUser.setName(cur.getString(arr[1]));
-                            curUser.setCash(cur.getInt(arr[2]));
-                            curUser.setRank(cur.getInt(arr[3]));
-
+                            int a = cur.getColumnIndex("userID");
                             try {
                                 JSONObject sendData = new JSONObject();
-                                sendData.put("what", 101);
-                                sendData.put("userID", curUser.getId());
+                                sendData.put("what", 103);
+                                sendData.put("userID", cur.getString(a));
                                 cram.send(sendData.toString());
 
                             } catch (JSONException e) {
@@ -220,33 +207,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+
+    }
+
+    @Override
     protected void onRestart() {
         super.onRestart();
 
-        sqlDb = myDb.getReadableDatabase();
-        Cursor cur = sqlDb.rawQuery("SELECT * FROM userTB", null);
-        if(cur.getCount() > 0){
-            cur.moveToFirst();
-
-            int [] arr = {
-                    cur.getColumnIndex("userID"),
-                    cur.getColumnIndex("userName"),
-                    cur.getColumnIndex("cash"),
-                    cur.getColumnIndex("rank")
-            };
-            curUser.setId(cur.getString(arr[0]));
-            curUser.setName(cur.getString(arr[1]));
-            curUser.setCash(cur.getInt(arr[2]));
-            curUser.setRank(cur.getInt(arr[3]));
-        }else {
-            curUser.setName("로그인을 해주세요.");
-            curUser.setRank(0);
-            curUser.setCash(0);
-        }
-        cur.close();
-        sqlDb.close();
-        profileFr.setProfile(curUser);
-
+        profileFr.setProfile();
+        profileFr.setLogOut();
+        settingFr.setQuit();
     }
 
     public void signOut() {
@@ -292,20 +264,5 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-    }
-
-    // 초기 로그인 정보 확인
-    private boolean checkLogin(){
-        sqlDb = myDb.getReadableDatabase();
-        Cursor cur = sqlDb.rawQuery("SELECT * FROM userTB", null);
-
-        if(cur.getCount() == 0){
-            cur.close();
-            sqlDb.close();
-            return false;
-        }
-        cur.close();
-        sqlDb.close();
-        return true;
     }
 }

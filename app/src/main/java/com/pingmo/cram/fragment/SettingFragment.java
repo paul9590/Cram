@@ -6,16 +6,16 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
+
+import com.pingmo.cram.Cram;
 import com.pingmo.cram.R;
 import com.pingmo.cram.activity.MainActivity;
 import com.pingmo.cram.activity.NoticeActivity;
@@ -28,6 +28,9 @@ import com.pingmo.cram.activity.NoticeActivity;
 public class SettingFragment extends Fragment {
 
     public Dialog dialogQuit;
+    Button btnQuit;
+
+    Cram cram = Cram.getInstance();
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -77,7 +80,9 @@ public class SettingFragment extends Fragment {
 
         Button btnNotice = rootView.findViewById(R.id.btnNotice);
         Button btnAsk = rootView.findViewById(R.id.btnAsk);
-        Button btnQuit = rootView.findViewById(R.id.btnQuitDialYes);
+        btnQuit = rootView.findViewById(R.id.btnQuit);
+
+        setQuit();
 
         btnNotice.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -112,10 +117,10 @@ public class SettingFragment extends Fragment {
     public void dialQuit(){
         dialogQuit.show();
 
-        Button btnQuit = dialogQuit.findViewById(R.id.btnQuitDialYes);
+        Button btnQuit2 = dialogQuit.findViewById(R.id.btnQuitDialYes);
         Button btnQuitExit = dialogQuit.findViewById(R.id.btnQuitDialNo);
 
-        btnQuit.setOnClickListener(new View.OnClickListener() {
+        btnQuit2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ((MainActivity)getActivity()).deleteUser();
@@ -131,6 +136,12 @@ public class SettingFragment extends Fragment {
                 dialogQuit.dismiss();
             }
         });
-
+    }
+    public void setQuit(){
+        if(cram.isUser(getActivity())){
+           btnQuit.setVisibility(View.VISIBLE);
+        }else{
+            btnQuit.setVisibility(View.INVISIBLE);
+        }
     }
 }

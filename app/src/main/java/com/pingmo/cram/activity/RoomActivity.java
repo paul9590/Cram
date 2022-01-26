@@ -217,7 +217,6 @@ public class RoomActivity extends AppCompatActivity {
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 if(!isLoading && !recyclerView.canScrollVertically(1)) {
-                    isLoading = true;
                     if(cram.isConnected()) {
                         cram.send(requestRoom.toString());
                     }else{
@@ -231,6 +230,17 @@ public class RoomActivity extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
+        cram.setHandler(roomHandler);
+        if(cram.isConnected()) {
+            cram.send(requestRoom.toString());
+        }else{
+            Toast.makeText(getApplicationContext(), "인터넷 연결을 확인해 주세요.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
         cram.setHandler(roomHandler);
         if(cram.isConnected()) {
             cram.send(requestRoom.toString());

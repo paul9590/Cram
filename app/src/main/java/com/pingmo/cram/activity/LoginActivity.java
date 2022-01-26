@@ -2,7 +2,6 @@ package com.pingmo.cram.activity;
 
 
 import android.content.Intent;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
@@ -46,8 +45,8 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private final int RC_SIGN_IN = 123;
 
-    private MyDBHelper myDb;
-    private SQLiteDatabase sqlDB;
+    public MyDBHelper myDb;
+    public SQLiteDatabase sqlDB;
 
     Handler loginHandler;
     Cram cram = Cram.getInstance();
@@ -59,7 +58,7 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
 
-        myDb = new MyDBHelper(getApplicationContext());
+        myDb = new MyDBHelper(this);
 
         //개인정보 및 이용 약관
         TextView txtLink = (TextView) findViewById(R.id.txtLink);
@@ -79,7 +78,9 @@ public class LoginActivity extends AppCompatActivity {
 
         btnLogin = findViewById(R.id.btnLogin);
 
-        CheckLogin();
+        if(cram.isUser(this)){
+            finish();
+        }
 
         // 구글 로그인 정보 불러오기
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -143,7 +144,9 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void onRestart() {
         super.onRestart();
-        CheckLogin();
+        if(cram.isUser(this)){
+            finish();
+        }
     }
 
     @Override
@@ -201,16 +204,5 @@ public class LoginActivity extends AppCompatActivity {
     private void signIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
-    }
-
-    // Register 액티비티 또는 Main 액티비티에서 들어올때 로그인 여부 확인
-    private void CheckLogin(){
-        myDb = new MyDBHelper(this);
-        sqlDB = myDb.getReadableDatabase();
-        Cursor cur = sqlDB.rawQuery("SELECT * FROM userTB", null);
-
-        if(cur.getCount() > 0){
-            finish();
-        }
     }
 }

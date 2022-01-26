@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.pingmo.cram.Cram;
 import com.pingmo.cram.R;
 import com.pingmo.cram.User;
 import com.pingmo.cram.activity.MainActivity;
@@ -35,6 +36,9 @@ public class ProfileFragment extends Fragment {
     ImageView imgUser2;
     TextView txtUser;
     TextView txtUserInfo;
+    Button btnLogOut;
+
+    Cram cram = Cram.getInstance();
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -89,13 +93,12 @@ public class ProfileFragment extends Fragment {
         txtUser = rootView.findViewById(R.id.txtUser);
         txtUserInfo = rootView.findViewById(R.id.txtUserInfo);
 
-        Button btnLogOut = rootView.findViewById(R.id.btnLogOut);
+        btnLogOut = rootView.findViewById(R.id.btnLogOut);
 
         imgUser2.setImageResource(R.drawable.help);
 
-
-        User curUser = ((MainActivity)getActivity()).curUser;
-        setProfile(curUser);
+        setProfile();
+        setLogOut();
 
         DrawerLayout drawLay = getActivity().findViewById(R.id.drawLay);
 
@@ -143,11 +146,20 @@ public class ProfileFragment extends Fragment {
         mList.add(item);
     }
 
-    public void setProfile(User curUser) {
-        txtUser.setText(curUser.getName());
+    public void setProfile() {
+        User curUser = cram.getUser(getActivity());;
+        txtUser.setText("" + curUser.getName());
         StringBuilder sb = new StringBuilder();
         sb.append("점수 : " + curUser.getRank() + "\n");
         sb.append("캐시 : " + curUser.getCash());
         txtUserInfo.setText(sb.toString());
+    }
+
+    public void setLogOut() {
+        if(cram.isUser(getActivity())){
+            btnLogOut.setVisibility(View.VISIBLE);
+        }else{
+            btnLogOut.setVisibility(View.INVISIBLE);
+        }
     }
 }
