@@ -120,6 +120,7 @@ public class RoomActivity extends AppCompatActivity {
                         String roomInfo = receiveData.getString("curPlayer") + "/" + receiveData.getString("maxPlayer");
                         JSONArray pData = receiveData.getJSONArray("players");
                         String [] players = new String[pData.length()];
+                        int leader = Integer.parseInt(receiveData.getString("leader"));
                         for(int i = 0; i < pData.length(); i++){
                             JSONObject player = (JSONObject) pData.get(i);
                             players[i] = player.getString("player");
@@ -130,6 +131,7 @@ public class RoomActivity extends AppCompatActivity {
                         gameIntent.putExtra("roomName", roomName);
                         gameIntent.putExtra("roomInfo", roomInfo);
                         gameIntent.putExtra("players", players);
+                        gameIntent.putExtra("leader", leader);
                         gameIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                         startActivity(gameIntent);
                     }else{

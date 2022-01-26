@@ -85,6 +85,7 @@ public class GameActivity extends AppCompatActivity {
         String roomNum = gameIntent.getStringExtra("roomNum");
         String roomName = gameIntent.getStringExtra("roomName");
         String roomInfo = gameIntent.getStringExtra("roomInfo");
+        int leader = gameIntent.getIntExtra("leader", 0);
         players = gameIntent.getStringArrayExtra("players");
 
         txtGameTitle = findViewById(R.id.txtGameTitle);
@@ -122,7 +123,7 @@ public class GameActivity extends AppCompatActivity {
         playerImg = new int[]{R.drawable.userimg, R.drawable.userimg, R.drawable.userimg, R.drawable.userimg,
                     R.drawable.userimg, R.drawable.userimg, R.drawable.userimg, R.drawable.userimg};
 
-        setGamer();
+        setGamer(leader);
 
         for(int i = 0; i < imgPlayer.length; i++) {
             int num = i;
@@ -206,13 +207,14 @@ public class GameActivity extends AppCompatActivity {
                     boolean isLock1 = receiveData.getString("roomPW").length() > 0;
                     String roomInfo1 = receiveData.getString("curPlayer") + "/" + receiveData.getString("maxPlayer");
                     JSONArray pData = receiveData.getJSONArray("players");
+                    int leader1 = Integer.parseInt(receiveData.getString("leader"));
                     players = new String[pData.length()];
                     for(int i = 0; i < pData.length(); i++){
                         JSONObject player = (JSONObject) pData.get(i);
                         players[i] = player.getString("player");
                     }
                     txtGameTitle.setText("" + roomNum1 + ". " + roomName1 + " (" + roomInfo1 + ")");
-                    setGamer();
+                    setGamer(leader1);
                 }
 
                 if(msg.what == 402) {
@@ -429,9 +431,7 @@ public class GameActivity extends AppCompatActivity {
         txtPlayerDial2.setText("" + (num + 1) + "번 플레이어 자리를 어떻게 할까요?");
 
         if(players[num].equals("Bot")){
-            btnAddBot.setVisibility(View.INVISIBLE);
-        }else{
-            btnAddBot.setVisibility(View.VISIBLE);
+            btnAddBot.setText("봇 제거");
         }
 
         if(players[num].equals("Locked")){
@@ -449,7 +449,12 @@ public class GameActivity extends AppCompatActivity {
                         cram.send(sendData2.toString());
                     }
                     JSONObject sendData = new JSONObject();
-                    sendData.put("what", 406);
+                    if(!players[num].equals("Bot")) {
+
+                        sendData.put("what", 406);
+                    }else {
+                        sendData.put("what", 407);
+                    }
                     sendData.put("botNum", Integer.toString(num));
                     cram.send(sendData.toString());
                 } catch (JSONException e) {
@@ -463,27 +468,28 @@ public class GameActivity extends AppCompatActivity {
 
         btnPlayerLock.setOnClickListener(v -> {
             // 방 잠그기
-            try {
-                if (cram.isConnected()) {
-                    JSONObject sendData = new JSONObject();
-                    if (!players[num].equals("Locked")) {
-                        if(players[num].equals("Bot")){
-                            JSONObject sendData2 = new JSONObject();
-                            sendData2.put("what", 407);
-                            sendData2.put("botNum", Integer.toString(num));
-                            cram.send(sendData2.toString());
-                        }
-                        sendData.put("what", 404);
-                    }else {
-                        sendData.put("what", 405);
-                    }
-                    sendData.put("lockNum", Integer.toString(num));
-                    cram.send(sendData.toString());
-                } else {
-                        Toast.makeText(getApplicationContext(), "인터넷 연결을 확인해 주세요.", Toast.LENGTH_SHORT).show();
+
+            if (cram.isConnected()) {
+                try {
+                if(players[num].equals("Bot")){
+                    JSONObject sendData2 = new JSONObject();
+                    sendData2.put("what", 407);
+                    sendData2.put("botNum", Integer.toString(num));
+                    cram.send(sendData2.toString());
                 }
-            }catch (JSONException e){
+                JSONObject sendData = new JSONObject();
+                if (!players[num].equals("Locked")) {
+                    sendData.put("what", 404);
+                }else {
+                    sendData.put("what", 405);
+                }
+                sendData.put("lockNum", Integer.toString(num));
+                cram.send(sendData.toString());
+                }catch (JSONException e){
                     e.printStackTrace();
+                }
+            } else {
+                Toast.makeText(getApplicationContext(), "인터넷 연결을 확인해 주세요.", Toast.LENGTH_SHORT).show();
             }
             txtPlayer[num].setText("");
 
@@ -493,11 +499,12 @@ public class GameActivity extends AppCompatActivity {
     }
 
     // 유저 설정
-    public void setGamer(){
+    public void setGamer(int leader){
         for(int i = 0; i < players.length; i++) {
             if(players[i].equals(userName)){
                 userNum = i;
             }
+            isHost = (leader == userNum);
 
             if(players[i].equals("Bot")){
                 txtPlayer[i].setText("Bot" + (i + 1));
