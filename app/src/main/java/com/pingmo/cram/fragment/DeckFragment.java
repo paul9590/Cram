@@ -97,6 +97,7 @@ public class DeckFragment extends Fragment {
                             JSONObject sendData = new JSONObject();
                             sendData.put("what", 301);
                             sendData.put("pop", Integer.toString(deck[num]));
+                            gameFinished();
                             cram.send(sendData.toString());
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -152,6 +153,12 @@ public class DeckFragment extends Fragment {
             if(!deckClick[i]){
                 imgDeck[i].setColorFilter(R.color.mainColor);
             }
+        }
+    }
+
+    public void gameFinished(){
+        for(int i = 0; i < imgDeck.length; i++) {
+            imgDeck[i].setClickable(false);
         }
     }
 }

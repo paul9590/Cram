@@ -29,6 +29,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.HashSet;
+
 public class GameActivity extends AppCompatActivity {
     public MyDBHelper myDb;
     public SQLiteDatabase sqlDb;
@@ -63,12 +65,15 @@ public class GameActivity extends AppCompatActivity {
     Thread rollThread;
     boolean isRolling = false;
     Handler rollHandler;
+
     int loser = 0;
     String winner = "";
 
     //덱 고르기
     int pickedCard = 0;
     int[] deck = new int[6];
+
+    HashSet<String> lastChat = new HashSet<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -170,31 +175,21 @@ public class GameActivity extends AppCompatActivity {
                 int max = gamer * 2;
                 cnt++;
                 int fin = max + loser;
-                if(cnt > fin){
+                if(cnt >= fin){
                     isRolling = false;
                     for (int i = 0; i < players.length; i++) {
                         imgPlayer[i].setBackgroundColor(Color.WHITE);
                     }
                     imgPlayer[loser].setBackgroundColor(Color.RED);
-                    if(userName.equals(winner)){
-                        if(cram.isConnected()) {
-                            try {
-                                JSONObject sendData = new JSONObject();
-                                sendData.put("what", 306);
-                                cram.send(sendData.toString());
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }else {
-                            Toast.makeText(getApplicationContext(), "인터넷 연결을 확인해 주세요.", Toast.LENGTH_SHORT).show();
-                        }
-                    }
+
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             cnt = 0;
                             loser = 0;
-                            imgPlayer[n].setBackgroundColor(Color.WHITE);
+                            for(int i = 0; i < imgPlayer.length; i++) {
+                                imgPlayer[i].setBackgroundColor(Color.WHITE);
+                            }
                         }
                     }, 3000);
                 }else {
@@ -212,7 +207,16 @@ public class GameActivity extends AppCompatActivity {
                 JSONObject receiveData = new JSONObject(msg.obj.toString());
                 if(msg.what == 200){
                     // 채팅
-                    adapter.addChat(receiveData.getString("who") + " : " + receiveData.getString("chat"));
+                    String who = receiveData.getString("who");
+                    String chat = receiveData.getString("chat");
+                    if(who.equals("system")){
+                        if(!lastChat.contains(chat)){
+                            adapter.addChat(who + " : " + chat);
+                        }
+                        lastChat.add(chat);
+                    }else {
+                        adapter.addChat(who + " : " + chat);
+                    }
                 }
                 if(msg.what == 300) {
                     //덱 제출
@@ -231,12 +235,7 @@ public class GameActivity extends AppCompatActivity {
                     for(int i = 0; i < deck.length; i++) {
                         deck[i] = Integer.parseInt(receiveData.getString(String.valueOf(i + 1)));
                     }
-                    while (true) {
-                        if(!isRolling) {
-                            adapter.setDeck(deck);
-                            break;
-                        }
-                    }
+                    adapter.setDeck(deck);
                 }
                 if(msg.what == 302) {
                     // 게임 끝
@@ -244,15 +243,19 @@ public class GameActivity extends AppCompatActivity {
                     if(isHost){
                         btnGameStart.setVisibility(View.VISIBLE);
                     }
-                    for(int i = 0; i < deck.length; i++) {
-                        deck[i] = 0;
-                    }
-                    while (true) {
-                        if(!isRolling) {
+                    String win = receiveData.getString("winner");
+                    Toast.makeText(getApplicationContext(), "" + win + "님이 우승 하셨 습니다.", Toast.LENGTH_SHORT).show();
+                    adapter.gameFinshed();
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            for(int i = 0; i < deck.length; i++) {
+                                deck[i] = 0;
+                            }
                             adapter.setDeck(deck);
-                            break;
                         }
-                    }
+                    }, 5000);
+
                     txtGameTitle.setText(title);
                 }
                 if(msg.what == 303) {
@@ -308,7 +311,24 @@ public class GameActivity extends AppCompatActivity {
                     }
                     // 제출 못할 경우 작성 해야댐
                     if(cnt == deckClickable.length){
-                        Toast.makeText(getApplicationContext(), "제출 할 수 있는 패가 없습니다.", Toast.LENGTH_SHORT).show();
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(getApplicationContext(), "제출 할 수 있는 패가 없습니다.", Toast.LENGTH_SHORT).show();
+                                if(cram.isConnected()) {
+                                    try {
+                                        JSONObject sendData = new JSONObject();
+                                        sendData.put("what", 301);
+                                        sendData.put("pop", Integer.toString(0));
+                                        cram.send(sendData.toString());
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }else {
+                                    Toast.makeText(getApplicationContext(), "인터넷 연결을 확인해 주세요.", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        }, 3000);
                     }
                     adapter.setClickable(deckClickable);
                 }
@@ -322,8 +342,25 @@ public class GameActivity extends AppCompatActivity {
                         }
                     }
                     isRolling = true;
+                    if(userName.equals(winner)){
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                if(cram.isConnected()) {
+                                    try {
+                                        JSONObject sendData = new JSONObject();
+                                        sendData.put("what", 306);
+                                        cram.send(sendData.toString());
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }else {
+                                    Toast.makeText(getApplicationContext(), "인터넷 연결을 확인해 주세요.", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        }, 3000);
+                    }
                 }
-
 
                 if(msg.what == 401) {
                     // 누군가 입장
@@ -354,6 +391,7 @@ public class GameActivity extends AppCompatActivity {
                         finish();
                     }
                 }
+
                 if(msg.what == 408){
                     // 추방
                     int kickNum = Integer.parseInt(receiveData.getString("kickNum"));
@@ -413,14 +451,6 @@ public class GameActivity extends AppCompatActivity {
             }
         });
 
-        txtGameTitle.setOnClickListener(v -> {
-            // 304 리턴 으로 txtGameTitle.setText();
-            // 301 리턴 올 때
-            if(!isRolling){
-                isRolling = true;
-            }
-        });
-
         rollThread = new Thread(){
             @Override
             public void run() {
@@ -466,17 +496,20 @@ public class GameActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-
-        if(cram.isConnected()) {
-            try {
-                JSONObject sendData = new JSONObject();
-                sendData.put("what", 402);
-                cram.send(sendData.toString());
-            } catch (JSONException e) {
-                e.printStackTrace();
+        if(!onGaming) {
+            if (cram.isConnected()) {
+                try {
+                    JSONObject sendData = new JSONObject();
+                    sendData.put("what", 402);
+                    cram.send(sendData.toString());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                Toast.makeText(getApplicationContext(), "인터넷 연결을 확인해 주세요.", Toast.LENGTH_SHORT).show();
             }
-        }else {
-            Toast.makeText(getApplicationContext(), "인터넷 연결을 확인해 주세요.", Toast.LENGTH_SHORT).show();
+        }else{
+            Toast.makeText(getApplicationContext(), "현재 게임이 진행 중 입니다.", Toast.LENGTH_SHORT).show();
         }
     }
 

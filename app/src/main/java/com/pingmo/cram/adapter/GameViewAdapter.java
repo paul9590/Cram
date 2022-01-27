@@ -51,7 +51,12 @@ public class GameViewAdapter extends FragmentPagerAdapter {
     public void setDeck(int [] deck){
         deckFr.setDeck(deck);
     }
+
     public void setClickable(boolean [] deckClick) {
         deckFr.setClickable(deckClick);
+    }
+
+    public void gameFinshed(){
+        deckFr.gameFinished();
     }
 }
