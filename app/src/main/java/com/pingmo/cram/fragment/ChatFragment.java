@@ -7,13 +7,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.pingmo.cram.Cram;
 import com.pingmo.cram.R;
-import com.pingmo.cram.activity.GameActivity;
 import com.pingmo.cram.adapter.RecyclerChatAdapter;
 
 import org.json.JSONException;
@@ -31,6 +32,7 @@ public class ChatFragment extends Fragment {
     RecyclerView mRecyclerView = null;
     RecyclerChatAdapter mAdapter = null;
     public ArrayList<String> mList;
+    Cram cram = Cram.getInstance();
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -87,14 +89,18 @@ public class ChatFragment extends Fragment {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if(keyCode == event.KEYCODE_ENTER){
                     if (!editChat.getText().toString().trim().equals("")) {
-                        try {
-                            JSONObject sendData = new JSONObject();
-                            sendData.put("what", 200);
-                            sendData.put("chat", editChat.getText().toString());
-                            ((GameActivity) getActivity()).cram.send(sendData.toString());
-                            editChat.setText("");
-                        }catch (JSONException e){
-                            e.printStackTrace();
+                        if(cram.isConnected()) {
+                            try {
+                                JSONObject sendData = new JSONObject();
+                                sendData.put("what", 200);
+                                sendData.put("chat", editChat.getText().toString());
+                                cram.send(sendData.toString());
+                                editChat.setText("");
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }else{
+                            Toast.makeText(getActivity(), "인터넷 연결을 확인해 주세요.", Toast.LENGTH_SHORT).show();
                         }
                     }
                     return true;
@@ -106,16 +112,19 @@ public class ChatFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if (!editChat.getText().toString().trim().equals("")) {
-                    try {
-                        JSONObject sendData = new JSONObject();
-                        sendData.put("what", 200);
-                        sendData.put("chat", editChat.getText().toString());
-                        ((GameActivity) getActivity()).cram.send(sendData.toString());
-                        editChat.setText("");
-                    }catch (JSONException e){
-                        e.printStackTrace();
+                    if(cram.isConnected()) {
+                        try {
+                            JSONObject sendData = new JSONObject();
+                            sendData.put("what", 200);
+                            sendData.put("chat", editChat.getText().toString());
+                            cram.send(sendData.toString());
+                            editChat.setText("");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }else {
+                        Toast.makeText(getActivity(), "인터넷 연결을 확인해 주세요.", Toast.LENGTH_SHORT).show();
                     }
-
                 }
             }
         });

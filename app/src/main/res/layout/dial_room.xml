@@ -60,7 +60,7 @@
             android:id="@+id/imbRoomCntDown"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/imbup"
+            android:src="@drawable/imbdown"
             android:background="#00000000"/>
 
         <TextView
@@ -75,7 +75,7 @@
             android:id="@+id/imbRoomCntUp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/imbdown"
+            android:src="@drawable/imbup"
             android:background="#00000000"/>
     </TableRow>
 

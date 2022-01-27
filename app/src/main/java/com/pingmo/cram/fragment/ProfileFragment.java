@@ -95,7 +95,7 @@ public class ProfileFragment extends Fragment {
 
         btnLogOut = rootView.findViewById(R.id.btnLogOut);
 
-        imgUser2.setImageResource(R.drawable.help);
+        imgUser2.setImageResource(R.drawable.userimg);
 
         setProfile();
         setLogOut();

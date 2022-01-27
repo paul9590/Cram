@@ -6,29 +6,29 @@ public class ShopArray {
                             "핑모", "에오", "안녕", "하세",
                             "핑모", "에오", "안녕"};
 
-    int [] shopRes1 = {R.drawable.help, R.drawable.help, R.drawable.help, R.drawable.help
-                    , R.drawable.help, R.drawable.help, R.drawable.help, R.drawable.help
-                    , R.drawable.help, R.drawable.help, R.drawable.help, };
+    int [] shopRes1 = {R.drawable.shopimg, R.drawable.shopimg, R.drawable.shopimg, R.drawable.shopimg
+                    , R.drawable.shopimg, R.drawable.shopimg, R.drawable.shopimg, R.drawable.shopimg
+                    , R.drawable.shopimg, R.drawable.shopimg, R.drawable.shopimg, };
 
     String [] shopMain2 = {"핑모", "에오", "안녕", "하세",
                             "핑모", "에오", "안녕", "하세",
                             "핑모", "에오", "안녕", "하세",
                             "핑모", "에오"};
 
-    int [] shopRes2 = {R.drawable.help, R.drawable.help, R.drawable.help, R.drawable.help
-            , R.drawable.help, R.drawable.help, R.drawable.help, R.drawable.help
-            , R.drawable.help, R.drawable.help, R.drawable.help, R.drawable.help
-            , R.drawable.help, R.drawable.help};
+    int [] shopRes2 = {R.drawable.shopimg, R.drawable.shopimg, R.drawable.shopimg, R.drawable.shopimg
+            , R.drawable.shopimg, R.drawable.shopimg, R.drawable.shopimg, R.drawable.shopimg
+            , R.drawable.shopimg, R.drawable.shopimg, R.drawable.shopimg, R.drawable.shopimg
+            , R.drawable.shopimg, R.drawable.shopimg};
 
     String [] shopMain3 = {"핑모", "에오", "안녕", "하세",
                             "핑모", "에오", "안녕", "하세",
                             "핑모", "에오", "안녕", "하세",
                             "핑모", "에오", "안녕", "하세",};
 
-    int [] shopRes3 = {R.drawable.help, R.drawable.help, R.drawable.help, R.drawable.help
-            , R.drawable.help, R.drawable.help, R.drawable.help, R.drawable.help
-            , R.drawable.help, R.drawable.help, R.drawable.help, R.drawable.help
-            , R.drawable.help, R.drawable.help, R.drawable.help, R.drawable.help};
+    int [] shopRes3 = {R.drawable.shopimg, R.drawable.shopimg, R.drawable.shopimg, R.drawable.shopimg
+            , R.drawable.shopimg, R.drawable.shopimg, R.drawable.shopimg, R.drawable.shopimg
+            , R.drawable.shopimg, R.drawable.shopimg, R.drawable.shopimg, R.drawable.shopimg
+            , R.drawable.shopimg, R.drawable.shopimg, R.drawable.shopimg, R.drawable.shopimg};
 
     public String[] getShopMain1() {
         return shopMain1;

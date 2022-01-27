@@ -4,7 +4,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +11,6 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -46,9 +44,9 @@ public class RecyclerFriendAdapter extends RecyclerView.Adapter<RecyclerFriendAd
         RecyclerFriendList item = mData.get(position);
 
         if(item.getOnline()){
-            holder.imgOnline.setImageResource(R.drawable.help);
+            holder.imgOnline.setImageResource(R.drawable.online);
         }else{
-            holder.imgOnline.setImageResource(R.drawable.help2);
+            holder.imgOnline.setImageResource(R.drawable.offline);
         }
         holder.txtFriend.setText(item.getName());
     }

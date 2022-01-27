@@ -6,10 +6,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
+import com.pingmo.cram.Cram;
 import com.pingmo.cram.R;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -18,11 +23,14 @@ import com.pingmo.cram.R;
  */
 public class DeckFragment extends Fragment {
 
+    ImageView [] imgDeck;
+    int [] deck = new int[6];
+    Cram cram = Cram.getInstance();
+
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-    ImageView [] imgDeck;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -75,9 +83,27 @@ public class DeckFragment extends Fragment {
         };
         // 액티비티 301 호출 핸드 제출
         for(int i = 0; i < imgDeck.length; i++) {
+            int num = i;
             imgDeck[i].setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    if(cram.isConnected()) {
+                        imgDeck[num].setColorFilter(R.color.secondColor);
+                        Toast.makeText(getActivity(), "" + deck[num] + "을 냈습니다.", Toast.LENGTH_SHORT).show();
+                        for(int j = 0; j < imgDeck.length; j++){
+                            imgDeck[j].setClickable(false);
+                        }
+                        try {
+                            JSONObject sendData = new JSONObject();
+                            sendData.put("what", 301);
+                            sendData.put("pop", Integer.toString(deck[num]));
+                            cram.send(sendData.toString());
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }else {
+                        Toast.makeText(getActivity(), "인터넷 연결을 확인해 주세요.", Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
         }
@@ -86,9 +112,9 @@ public class DeckFragment extends Fragment {
     }
 
     public void setDeck(int [] deck) {
-        // 이 부분 맨 앞 부분에 없는 경우 집어 넣기
-        // 만약 없다면 clickable false
+        this.deck = deck;
         int card [] = {
+                R.drawable.layoutshape,
                 R.drawable.card1,
                 R.drawable.card2,
                 R.drawable.card3,
@@ -106,7 +132,16 @@ public class DeckFragment extends Fragment {
                 R.drawable.card15,
         };
 
+        for(int i = 0; i < imgDeck.length; i++) {
+            imgDeck[i].setClickable(false);
+            imgDeck[i].setColorFilter(Color.parseColor("#00000000"));
+            imgDeck[i].setImageResource(card[0]);
+        }
+
         for(int i = 0; i < deck.length; i++) {
+            if(deck[i] > 0) {
+                imgDeck[i].setClickable(true);
+            }
             imgDeck[i].setImageResource(card[deck[i]]);
         }
     }

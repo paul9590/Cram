@@ -13,7 +13,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.05"
-        android:src="@drawable/help"/>
+        android:src="@drawable/roomlocked"/>
 
     <TextView
         android:id="@+id/txtRoomName"

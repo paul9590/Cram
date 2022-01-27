@@ -140,7 +140,6 @@ public class RoomActivity extends AppCompatActivity {
                 }
                 if(msg.what == 403) {
                     // 방 요청
-                    isLoading = true;
                     mList.add(null);
                     mAdapter.notifyItemInserted(mList.size() - 1);
                     Handler handler = new Handler();
@@ -220,10 +219,12 @@ public class RoomActivity extends AppCompatActivity {
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 if(!isLoading && !recyclerView.canScrollVertically(1)) {
+                    isLoading = true;
                     if(cram.isConnected()) {
                         cram.send(requestRoom.toString());
                     }else{
                         Toast.makeText(getApplicationContext(), "인터넷 연결을 확인해 주세요.", Toast.LENGTH_SHORT).show();
+                        isLoading = false;
                     }
                 }
             }
@@ -235,9 +236,11 @@ public class RoomActivity extends AppCompatActivity {
         super.onStart();
         cram.setHandler(roomHandler);
         if(cram.isConnected()) {
+            isLoading = true;
             cram.send(requestRoom.toString());
         }else{
             Toast.makeText(getApplicationContext(), "인터넷 연결을 확인해 주세요.", Toast.LENGTH_SHORT).show();
+            isLoading = false;
         }
     }
 
