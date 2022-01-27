@@ -1,5 +1,6 @@
 package com.pingmo.cram.fragment;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -72,6 +73,7 @@ public class DeckFragment extends Fragment {
                 rootView.findViewById(R.id.imgDeck5),
                 rootView.findViewById(R.id.imgDeck6),
         };
+        // 액티비티 301 호출 핸드 제출
         for(int i = 0; i < imgDeck.length; i++) {
             imgDeck[i].setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -83,7 +85,9 @@ public class DeckFragment extends Fragment {
         return rootView;
     }
 
-    public void setDeck(int deck []) {
+    public void setDeck(int [] deck) {
+        // 이 부분 맨 앞 부분에 없는 경우 집어 넣기
+        // 만약 없다면 clickable false
         int card [] = {
                 R.drawable.card1,
                 R.drawable.card2,
@@ -104,6 +108,15 @@ public class DeckFragment extends Fragment {
 
         for(int i = 0; i < deck.length; i++) {
             imgDeck[i].setImageResource(card[deck[i]]);
+        }
+    }
+    public void setClickable(boolean [] deckClick){
+        for(int i = 0; i < deckClick.length; i++) {
+            imgDeck[i].setColorFilter(Color.parseColor("#00000000"));
+            imgDeck[i].setClickable(deckClick[i]);
+            if(!deckClick[i]){
+                imgDeck[i].setColorFilter(R.color.mainColor);
+            }
         }
     }
 }

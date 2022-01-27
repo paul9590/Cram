@@ -43,6 +43,7 @@ public class GameActivity extends AppCompatActivity {
     Dialog cardPickDialog;
 
     TextView txtGameTitle;
+    Button btnGameStart;
 
     String [] players;
     TextView[] txtPlayer;
@@ -85,11 +86,12 @@ public class GameActivity extends AppCompatActivity {
         String roomNum = gameIntent.getStringExtra("roomNum");
         String roomName = gameIntent.getStringExtra("roomName");
         String roomInfo = gameIntent.getStringExtra("roomInfo");
-        int leader = gameIntent.getIntExtra("leader", 0);
+        int host = gameIntent.getIntExtra("host", 0);
         players = gameIntent.getStringArrayExtra("players");
 
         txtGameTitle = findViewById(R.id.txtGameTitle);
         txtGameTitle.setText("" + roomNum + ". " + roomName + " (" + roomInfo + ")");
+        btnGameStart = findViewById(R.id.btnGameStart);
 
         ViewPager pager = findViewById(R.id.pagerGame);
         TabLayout tabLayout = findViewById(R.id.tabGame);
@@ -123,7 +125,7 @@ public class GameActivity extends AppCompatActivity {
         playerImg = new int[]{R.drawable.userimg, R.drawable.userimg, R.drawable.userimg, R.drawable.userimg,
                     R.drawable.userimg, R.drawable.userimg, R.drawable.userimg, R.drawable.userimg};
 
-        setGamer(leader);
+        setGamer(host);
 
         for(int i = 0; i < imgPlayer.length; i++) {
             int num = i;
@@ -199,6 +201,21 @@ public class GameActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), "카드 제출에 실패 했습니다.", Toast.LENGTH_SHORT).show();
                     }
                 }
+                if(msg.what == 301){
+                    // 덱 남은거 호출 보여 주기 0을 넣던 해서 호출
+                    deck = new int[deck.length];
+                    
+                    adapter.setDeck(deck);
+                }
+                if(msg.what == 304){
+                    // 덱 비교
+                    boolean [] deckClickable = new boolean[deck.length];
+                    for(int i = 0; i < deck.length; i++){
+                        deckClickable[i] = true;
+                    }
+                    adapter.setClickable(deckClickable);
+                }
+
 
                 if(msg.what == 401) {
                     // 누군가 입장
@@ -207,14 +224,14 @@ public class GameActivity extends AppCompatActivity {
                     boolean isLock1 = receiveData.getString("roomPW").length() > 0;
                     String roomInfo1 = receiveData.getString("curPlayer") + "/" + receiveData.getString("maxPlayer");
                     JSONArray pData = receiveData.getJSONArray("players");
-                    int leader1 = Integer.parseInt(receiveData.getString("leader"));
+                    int host1 = Integer.parseInt(receiveData.getString("host"));
                     players = new String[pData.length()];
                     for(int i = 0; i < pData.length(); i++){
                         JSONObject player = (JSONObject) pData.get(i);
                         players[i] = player.getString("player");
                     }
                     txtGameTitle.setText("" + roomNum1 + ". " + roomName1 + " (" + roomInfo1 + ")");
-                    setGamer(leader1);
+                    setGamer(host1);
                 }
 
                 if(msg.what == 402) {
@@ -245,17 +262,26 @@ public class GameActivity extends AppCompatActivity {
             return true;
         });
 
+        btnGameStart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // 게임 시작 요청 보내기 이 부분도 303 리턴 값이 호출 될 때 실행
+                cardPickDialog = new Dialog(GameActivity.this);
+                cardPickDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                cardPickDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                cardPickDialog.setContentView(R.layout.dial_cardpick);
+                cardPickDialog();
+            }
+        });
 
         txtGameTitle.setOnClickListener(v -> {
+            // 304 리턴 으로 txtGameTitle.setText();
+            // 301 리턴 올 때
             if(!isRolling){
                 isRolling = true;
             }
-            cardPickDialog = new Dialog(GameActivity.this);
-            cardPickDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            cardPickDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-            cardPickDialog.setContentView(R.layout.dial_cardpick);
-            cardPickDialog();
         });
+
         rollThread = new Thread(){
             @Override
             public void run() {
@@ -281,8 +307,10 @@ public class GameActivity extends AppCompatActivity {
                                     Thread.sleep(200);
                                 }
                             }
+                        }else{
+                            Thread.sleep(1000);
                         }
-                    } catch (InterruptedException e) {
+                    } catch (Exception e) {
                             e.printStackTrace();
                     }
                 }
@@ -364,6 +392,7 @@ public class GameActivity extends AppCompatActivity {
                     for(int i = 0; i < imgPick.length; i++) {
                         if(imgPick[i].getTag().equals("Picked")){
                             sendData.put(String.valueOf(cnt), Integer.toString(i + 1));
+                            // 이 부분 i + 1 로 바꿔서 실제 숫자를 리턴할 것
                             deck[cnt - 1] = i;
                             cnt++;
                         }
@@ -450,7 +479,6 @@ public class GameActivity extends AppCompatActivity {
                     }
                     JSONObject sendData = new JSONObject();
                     if(!players[num].equals("Bot")) {
-
                         sendData.put("what", 406);
                     }else {
                         sendData.put("what", 407);
@@ -468,23 +496,22 @@ public class GameActivity extends AppCompatActivity {
 
         btnPlayerLock.setOnClickListener(v -> {
             // 방 잠그기
-
             if (cram.isConnected()) {
                 try {
-                if(players[num].equals("Bot")){
-                    JSONObject sendData2 = new JSONObject();
-                    sendData2.put("what", 407);
-                    sendData2.put("botNum", Integer.toString(num));
-                    cram.send(sendData2.toString());
-                }
-                JSONObject sendData = new JSONObject();
-                if (!players[num].equals("Locked")) {
-                    sendData.put("what", 404);
-                }else {
-                    sendData.put("what", 405);
-                }
-                sendData.put("lockNum", Integer.toString(num));
-                cram.send(sendData.toString());
+                    if(players[num].equals("Bot")){
+                        JSONObject sendData2 = new JSONObject();
+                        sendData2.put("what", 407);
+                        sendData2.put("botNum", Integer.toString(num));
+                        cram.send(sendData2.toString());
+                    }
+                    JSONObject sendData = new JSONObject();
+                    if (!players[num].equals("Locked")) {
+                        sendData.put("what", 404);
+                    }else {
+                        sendData.put("what", 405);
+                    }
+                    sendData.put("lockNum", Integer.toString(num));
+                    cram.send(sendData.toString());
                 }catch (JSONException e){
                     e.printStackTrace();
                 }
@@ -499,12 +526,12 @@ public class GameActivity extends AppCompatActivity {
     }
 
     // 유저 설정
-    public void setGamer(int leader){
+    public void setGamer(int host){
         for(int i = 0; i < players.length; i++) {
             if(players[i].equals(userName)){
                 userNum = i;
             }
-            isHost = (leader == userNum);
+            isHost = (host == userNum);
 
             if(players[i].equals("Bot")){
                 txtPlayer[i].setText("Bot" + (i + 1));

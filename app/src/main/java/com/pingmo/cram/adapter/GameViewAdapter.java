@@ -48,7 +48,10 @@ public class GameViewAdapter extends FragmentPagerAdapter {
         chatFr.addChat(s);
     }
 
-    public void setDeck(int deck []){
+    public void setDeck(int [] deck){
         deckFr.setDeck(deck);
+    }
+    public void setClickable(boolean [] deckClick) {
+        deckFr.setClickable(deckClick);
     }
 }

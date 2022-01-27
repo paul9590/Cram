@@ -62,6 +62,14 @@
 
         </FrameLayout>
 
+        <Button
+            android:id="@+id/btnGameStart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintRight_toLeftOf="@id/guideGameR"
+            app:layout_constraintBottom_toTopOf="@id/guideGameChar"
+            android:text="게임 시작" />
+
         <TableLayout
             android:id="@+id/tbPlayer"
             android:layout_width="wrap_content"

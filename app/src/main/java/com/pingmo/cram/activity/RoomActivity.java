@@ -120,7 +120,7 @@ public class RoomActivity extends AppCompatActivity {
                         String roomInfo = receiveData.getString("curPlayer") + "/" + receiveData.getString("maxPlayer");
                         JSONArray pData = receiveData.getJSONArray("players");
                         String [] players = new String[pData.length()];
-                        int leader = Integer.parseInt(receiveData.getString("leader"));
+                        int host = Integer.parseInt(receiveData.getString("host"));
                         for(int i = 0; i < pData.length(); i++){
                             JSONObject player = (JSONObject) pData.get(i);
                             players[i] = player.getString("player");
@@ -131,7 +131,7 @@ public class RoomActivity extends AppCompatActivity {
                         gameIntent.putExtra("roomName", roomName);
                         gameIntent.putExtra("roomInfo", roomInfo);
                         gameIntent.putExtra("players", players);
-                        gameIntent.putExtra("leader", leader);
+                        gameIntent.putExtra("host", host);
                         gameIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                         startActivity(gameIntent);
                     }else{
@@ -152,8 +152,8 @@ public class RoomActivity extends AppCompatActivity {
                             mAdapter.notifyItemRemoved(scrollPosition);
 
                             try {
-                                JSONArray datas = receiveData.getJSONArray("detail");
                                 mList.clear();
+                                JSONArray datas = receiveData.getJSONArray("detail");
                                 for (int i = 0; i < datas.length(); i++) {
                                     JSONObject data = (JSONObject) datas.get(i);
                                     boolean isLock = data.getString("roomPW").length() > 0;
